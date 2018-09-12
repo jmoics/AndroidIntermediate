@@ -4,11 +4,11 @@
         <item
             android:id="@+id/nav_profile"
             android:icon="@drawable/nav_profile"
-            android:title="@string/nav_profile"
-            android:checked="true" />
+            android:title="@string/nav_profile" />
         <item
             android:id="@+id/nav_task"
             android:icon="@drawable/nav_task"
-            android:title="@string/nav_task" />
+            android:title="@string/nav_task"
+            android:checked="true" />
     </group>
 </menu>

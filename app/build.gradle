@@ -33,4 +33,6 @@ dependencies {
     annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
 
     implementation 'com.squareup.picasso:picasso:2.71828'
+    implementation 'com.squareup.retrofit2:retrofit:2.4.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.4.0'
 }
