@@ -9,4 +9,7 @@
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="fragment_user_correo">Correo Electrónico</string>
+    <string name="fragment_user_fullname">Nombre Completo</string>
+    <string name="fragment_user_email">Correo Electrónico</string>
 </resources>

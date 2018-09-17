@@ -21,7 +21,7 @@ import org.joda.time.DateTime;
 import java.util.List;
 
 import pe.com.lycsoftware.cibertecproject.model.Task;
-import pe.com.lycsoftware.cibertecproject.service.TaskService;
+import pe.com.lycsoftware.cibertecproject.restService.TaskService;
 import pe.com.lycsoftware.cibertecproject.util.Constants;
 import pe.com.lycsoftware.cibertecproject.util.DateTimeTypeConverter;
 import retrofit2.Call;
@@ -35,7 +35,7 @@ public class TaskListFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
 
-    private OnFragmentInteractionListener mListener;
+    private OnTaskListFragmentInteractionListener mListener;
 
     public TaskListFragment() {
         // Required empty public constructor
@@ -93,18 +93,18 @@ public class TaskListFragment extends Fragment {
 
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
-            mListener.onFragmentInteraction(uri);
+            mListener.onTaskListFragmentInteraction(uri);
         }
     }
 
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
-        if (context instanceof OnFragmentInteractionListener) {
-            mListener = (OnFragmentInteractionListener) context;
+        if (context instanceof OnTaskListFragmentInteractionListener) {
+            mListener = (OnTaskListFragmentInteractionListener) context;
         } else {
             throw new RuntimeException(context.toString()
-                    + " must implement OnFragmentInteractionListener");
+                    + " must implement OnTaskListFragmentInteractionListener");
         }
     }
 
@@ -181,8 +181,8 @@ public class TaskListFragment extends Fragment {
         }
     }
 
-    public interface OnFragmentInteractionListener {
+    public interface OnTaskListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onFragmentInteraction(Uri uri);
+        void onTaskListFragmentInteraction(Uri uri);
     }
 }

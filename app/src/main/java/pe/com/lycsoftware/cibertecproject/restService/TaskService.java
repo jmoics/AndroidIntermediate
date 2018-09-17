@@ -1,4 +1,4 @@
-package pe.com.lycsoftware.cibertecproject.service;
+package pe.com.lycsoftware.cibertecproject.restService;
 
 import java.util.List;
 

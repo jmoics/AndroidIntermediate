@@ -11,12 +11,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
+
+import pe.com.lycsoftware.cibertecproject.model.User;
 
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-        TaskListFragment.OnFragmentInteractionListener {
+                    TaskListFragment.OnTaskListFragmentInteractionListener,
+                    UserFragment.OnFragmentInteractionListener {
 
     private static final String TAG = "MenuActivity";
+    private TextView txt_navfullname, txt_navemail;
+    private ImageView img_navphoto;
+    private final User user = new User();
     private int menuSelected;
 
     @Override
@@ -38,12 +47,28 @@ public class MenuActivity extends AppCompatActivity
 
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+        initNavControllers(navigationView);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
+        user.setDisplayName("Jorge Moises Cueva Samames");
+        user.setEmail("jmoics@gmail.com");
+        user.setId(1);
+
+        txt_navemail.setText(user.getEmail());
+        txt_navfullname.setText(user.getDisplayName());
+
         executeFragment(menuSelected);
+    }
+
+    private void initNavControllers(NavigationView navigationView) {
+        View headerView = navigationView.getHeaderView(0);
+        txt_navfullname = headerView.findViewById(R.id.txt_navfullname);
+        txt_navemail = headerView.findViewById(R.id.txt_navemail);
+        img_navphoto = headerView.findViewById(R.id.img_navphoto);
     }
 
     @Override
@@ -63,7 +88,7 @@ public class MenuActivity extends AppCompatActivity
                 menuSelected = R.id.nav_task;
                 break;
             case R.id.nav_profile:
-                //fragment = CattleListFragment.newInstance(null);
+                fragment = UserFragment.newInstance(user);
                 //menuSelected = R.id.nav_cattles;
                 break;
             default:
@@ -80,7 +105,12 @@ public class MenuActivity extends AppCompatActivity
     }
 
     @Override
-    public void onFragmentInteraction(Uri uri) {
+    public void onUserFragmentInteraction(Uri uri) {
+
+    }
+
+    @Override
+    public void onTaskListFragmentInteraction(Uri uri) {
 
     }
 }
