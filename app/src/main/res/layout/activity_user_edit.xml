@@ -12,7 +12,8 @@
         android:layout_height="?attr/actionBarSize"
         android:background="?attr/colorPrimary"
         android:elevation="4dp"
-        android:theme="@style/AppTheme.AppBarOverlay"/>
+        android:theme="@style/AppTheme.AppBarOverlay">
+    </android.support.v7.widget.Toolbar>
 
     <android.support.design.widget.TextInputLayout
         android:id="@+id/textInputLayout"
@@ -23,13 +24,14 @@
         android:layout_marginEnd="8dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/bar_menu">
+        app:layout_constraintTop_toBottomOf="@+id/toolbarUserEdit">
 
         <android.support.design.widget.TextInputEditText
             android:id="@+id/edtEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:hint="@string/activity_user_edtEmail" />
+
     </android.support.design.widget.TextInputLayout>
 
     <android.support.design.widget.TextInputLayout
@@ -81,6 +83,17 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/textInputLayout4"
         app:srcCompat="@mipmap/ic_launcher" />
+
+    <ProgressBar
+        android:id="@+id/progressBarSave"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        android:translationZ="2dp"
+        app:layout_constraintEnd_toEndOf="@+id/toolbarUserEdit"
+        app:layout_constraintTop_toTopOf="@+id/toolbarUserEdit"
+        tools:visibility="visible"/>
 
 
 </android.support.constraint.ConstraintLayout>

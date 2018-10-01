@@ -104,13 +104,13 @@ public class MenuActivity extends AppCompatActivity
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
-        executeFragment(id);
+        execute(id);
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
 
-    private void executeFragment(int selected) {
+    private void execute(int selected) {
         Fragment fragment = null;
         switch (selected) {
             case R.id.navTask:

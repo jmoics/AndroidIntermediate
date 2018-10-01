@@ -62,15 +62,15 @@ public class UserFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View ret = inflater.inflate(R.layout.fragment_user, container, false);
-        txt_email = ret.findViewById(R.id.txt_email);
-        txt_fullname = ret.findViewById(R.id.txt_fullname);
-        img_photo = ret.findViewById(R.id.img_photo);
+        txt_email = ret.findViewById(R.id.txtEmail);
+        txt_fullname = ret.findViewById(R.id.txtFullname);
+        img_photo = ret.findViewById(R.id.imgUser);
 
         txt_fullname.setText(user.getDisplayName());
         txt_email.setText(user.getEmail());
 
         Glide.with(this)
-                .load(Constants.hardcode_userphoto_url)
+                .load(user.getUrlImage())
                 .into(img_photo);
         /*try {
             Log.d(TAG, "contenedor de imagen w: " + img_photo.getMaxWidth() + " - h: " + img_photo.getMaxHeight());

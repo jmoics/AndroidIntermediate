@@ -5,13 +5,11 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
-import android.os.PersistableBundle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -29,8 +27,8 @@ public class UserActivity extends AppCompatActivity {
 
     private static final String ARG_USER = "user";
     private static final String TAG = "UserFragment";
-    private TextView txt_email, txt_fullname;
-    private ImageView img_photo;
+    private TextView txtEmail, txtFullname;
+    private ImageView imgUser;
     private User user;
 
     @Override
@@ -45,16 +43,10 @@ public class UserActivity extends AppCompatActivity {
             user = savedInstanceState.getParcelable(Constants.USER_PARAM);
         }
 
-        txt_email = findViewById(R.id.txt_email);
-        txt_fullname = findViewById(R.id.txt_fullname);
-        img_photo = findViewById(R.id.img_photo);
+        txtEmail = findViewById(R.id.txtEmail);
+        txtFullname = findViewById(R.id.txtFullname);
+        imgUser = findViewById(R.id.imgUser);
 
-        txt_fullname.setText(user.getDisplayName());
-        txt_email.setText(user.getEmail());
-
-        Glide.with(this)
-                .load(Constants.hardcode_userphoto_url)
-                .into(img_photo);
     }
 
     private void setToolbarProperties() {
@@ -75,7 +67,12 @@ public class UserActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+        txtFullname.setText(user.getDisplayName());
+        txtEmail.setText(user.getEmail());
 
+        Glide.with(this)
+                .load(user.getUrlImage())
+                .into(imgUser);
     }
 
     @Override
@@ -89,7 +86,7 @@ public class UserActivity extends AppCompatActivity {
         Log.d(TAG, "onActivityResult: ");
         switch (requestCode) {
             case Constants.USEREDIT_REQUEST_CODE:
-                if (requestCode == Activity.RESULT_OK) {
+                if (resultCode == Activity.RESULT_OK) {
                     user = data.getParcelableExtra(Constants.USER_PARAM);
                 }
                 break;
@@ -130,7 +127,7 @@ public class UserActivity extends AppCompatActivity {
             protected void onPostExecute(Bitmap bitmap) {
                 if (bitmap != null) {
                     //bitmap = rotarBitmapSiSeRequiere(bitmap);
-                    img_photo.setImageBitmap(bitmap);
+                    imgUser.setImageBitmap(bitmap);
                 }
             }
 

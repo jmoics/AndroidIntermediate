@@ -8,19 +8,24 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 
 import pe.com.lycsoftware.cibertecproject.model.User;
 import pe.com.lycsoftware.cibertecproject.util.Constants;
+import pe.com.lycsoftware.cibertecproject.util.Networking;
 
 public class UserEditActivity extends AppCompatActivity {
 
     private static final String TAG = "UserEditActivity";
     private EditText edtEmail, edtName, edtUrlImage;
     private ImageView imgUserPicture;
+    private ProgressBar progressBarSave;
     private User user;
 
     @Override
@@ -32,6 +37,7 @@ public class UserEditActivity extends AppCompatActivity {
         edtName = findViewById(R.id.edtName);
         edtUrlImage = findViewById(R.id.edtUrlImage);
         imgUserPicture = findViewById(R.id.imgUserPicture);
+        progressBarSave = findViewById(R.id.progressBarSave);
 
         setToolbarProperties();
 
@@ -67,11 +73,35 @@ public class UserEditActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_save:
-                //guardar
+                update();
                 break;
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    private void update() {
+        user.setDisplayName(edtName.getText().toString());
+        user.setEmail(edtEmail.getText().toString());
+        user.setUrlImage(edtUrlImage.getText().toString());
+
+        progressBarSave.setVisibility(View.VISIBLE);
+        Networking.updateUser(user, new Networking.NetworkingCallback<User>() {
+            @Override
+            public void onResponse(User response) {
+                Intent intent = new Intent();
+                intent.putExtra(Constants.USER_PARAM, response);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                progressBarSave.setVisibility(View.GONE);
+                Toast.makeText(UserEditActivity.this,
+                        "Nose pudo actualizar el usuario", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
