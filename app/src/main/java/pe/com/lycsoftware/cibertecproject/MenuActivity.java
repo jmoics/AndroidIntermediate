@@ -1,5 +1,6 @@
 package pe.com.lycsoftware.cibertecproject;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -10,12 +11,19 @@ import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.util.List;
 
 import pe.com.lycsoftware.cibertecproject.model.User;
+import pe.com.lycsoftware.cibertecproject.util.Constants;
+import pe.com.lycsoftware.cibertecproject.util.Networking;
 
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
@@ -25,7 +33,7 @@ public class MenuActivity extends AppCompatActivity
     private static final String TAG = "MenuActivity";
     private TextView txt_navfullname, txt_navemail;
     private ImageView img_navphoto;
-    private final User user = new User();
+    private User user;
     private int menuSelected;
 
     @Override
@@ -33,7 +41,7 @@ public class MenuActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        menuSelected = menuSelected != 1 ? menuSelected : R.id.nav_task;
+        //menuSelected = menuSelected != 1 ? menuSelected : R.id.navTask;
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -54,14 +62,36 @@ public class MenuActivity extends AppCompatActivity
     @Override
     protected void onStart() {
         super.onStart();
-        user.setDisplayName("Jorge Moises Cueva Samames");
+        Log.d(TAG, "onStart: ");
+        /*user.setDisplayName("Jorge Moises Cueva Samames");
         user.setEmail("jmoics@gmail.com");
-        user.setId(1);
+        user.setObjectId(1);*/
 
-        txt_navemail.setText(user.getEmail());
-        txt_navfullname.setText(user.getDisplayName());
+        loadUser();
+        if (user != null) {
+            txt_navemail.setText(user.getEmail());
+            txt_navfullname.setText(user.getDisplayName());
 
-        executeFragment(menuSelected);
+            //executeFragment(menuSelected);
+        } else {
+            Toast.makeText(this,
+                    "Existe un error con la conexión al servidor 1", Toast.LENGTH_LONG).show();
+        }
+    }
+
+    private void loadUser() {
+        Networking.getUser4Email("jmoics@gmail.com", new Networking.NetworkingCallback<List<User>>() {
+            @Override
+            public void onResponse(List<User> response) {
+                user = !response.isEmpty() ? response.get(0) : null;
+                Log.d(TAG, "onResponse: User correctly loaded Name = " + user.getDisplayName());
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Log.d(TAG, "onError: Error in user loading", throwable);
+            }
+        });
     }
 
     private void initNavControllers(NavigationView navigationView) {
@@ -83,17 +113,25 @@ public class MenuActivity extends AppCompatActivity
     private void executeFragment(int selected) {
         Fragment fragment = null;
         switch (selected) {
-            case R.id.nav_task:
+            case R.id.navTask:
                 fragment = TaskListFragment.newInstance();
-                menuSelected = R.id.nav_task;
+                menuSelected = R.id.navTask;
                 break;
-            case R.id.nav_profile:
-                fragment = UserFragment.newInstance(user);
-                //menuSelected = R.id.nav_cattles;
+            case R.id.navProfile:
+                menuSelected = R.id.navProfile;
+                if (user != null) {
+                    Intent intent = new Intent(this, UserActivity.class);
+                    intent.putExtra(Constants.USER_PARAM, user);
+                    startActivityForResult(intent, Constants.USER_REQUEST_CODE);
+                } else {
+                    Toast.makeText(this,
+                            "Existe un error con la conexión al servidor 2", Toast.LENGTH_LONG)
+                            .show();
+                }
                 break;
             default:
                 fragment = TaskListFragment.newInstance();
-                menuSelected = R.id.nav_task;
+                menuSelected = R.id.navTask;
         }
 
         if (fragment != null) {
@@ -101,6 +139,17 @@ public class MenuActivity extends AppCompatActivity
                     .replace(R.id.fragment_content, fragment)
                     .addToBackStack(null)
                     .commit();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(TAG, "onActivityResult: ");
+        switch (requestCode) {
+            case Constants.USER_REQUEST_CODE:
+                user = data.getParcelableExtra(Constants.USER_PARAM);
+                break;
         }
     }
 

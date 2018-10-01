@@ -1,6 +1,7 @@
 package pe.com.lycsoftware.cibertecproject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -9,10 +10,15 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.bumptech.glide.Glide;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,12 +69,16 @@ public class UserFragment extends Fragment {
         txt_fullname.setText(user.getDisplayName());
         txt_email.setText(user.getEmail());
 
-        try {
+        Glide.with(this)
+                .load(Constants.hardcode_userphoto_url)
+                .into(img_photo);
+        /*try {
             Log.d(TAG, "contenedor de imagen w: " + img_photo.getMaxWidth() + " - h: " + img_photo.getMaxHeight());
             showOptimalImage(Constants.hardcode_userphoto_url);
+
         } catch (IOException e) {
             e.printStackTrace();
-        }
+        }*/
 
         return ret;
     }
@@ -112,6 +122,29 @@ public class UserFragment extends Fragment {
 
         }.execute(url);
 
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.menu_profile, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+
+        if (id == R.id.action_edit) {
+            Intent intent = new Intent(getActivity(), UserEditActivity.class);
+            intent.putExtra(Constants.USER_PARAM, user);
+            startActivityForResult(intent, Constants.USER_REQUEST_CODE);
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     // TODO: Rename method, update argument and hook method into UI event

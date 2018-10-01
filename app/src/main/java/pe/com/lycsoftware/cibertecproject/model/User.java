@@ -3,22 +3,24 @@ package pe.com.lycsoftware.cibertecproject.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 public class User implements Parcelable {
-    private Integer id;
+    @SerializedName("objectId")
+    private String objectId;
+    @SerializedName("email")
     private String email;
+    @SerializedName("name")
     private String displayName;
+    @SerializedName("url_image")
+    private String urlImage;
 
     protected User(Parcel in) {
-        if (in.readByte() == 0) {
-            id = null;
-        } else {
-            id = in.readInt();
-        }
+        objectId = in.readString();
         email = in.readString();
         displayName = in.readString();
+        urlImage = in.readString();
     }
-
-    public User() {}
 
     public static final Creator<User> CREATOR = new Creator<User>() {
         @Override
@@ -32,12 +34,12 @@ public class User implements Parcelable {
         }
     };
 
-    public Integer getId() {
-        return id;
+    public String getObjectId() {
+        return objectId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setObjectId(String objectId) {
+        this.objectId = objectId;
     }
 
     public String getEmail() {
@@ -56,6 +58,14 @@ public class User implements Parcelable {
         this.displayName = displayName;
     }
 
+    public String getUrlImage() {
+        return urlImage;
+    }
+
+    public void setUrlImage(String urlImage) {
+        this.urlImage = urlImage;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -63,13 +73,9 @@ public class User implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        if (id == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(id);
-        }
+        dest.writeString(objectId);
         dest.writeString(email);
         dest.writeString(displayName);
+        dest.writeString(urlImage);
     }
 }

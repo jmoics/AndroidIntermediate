@@ -8,7 +8,8 @@ import com.google.gson.annotations.SerializedName;
 import org.joda.time.DateTime;
 
 public class Task implements Parcelable {
-    private Integer id;
+    @SerializedName("objectId")
+    private Integer objectId;
     private String name;
     @SerializedName("taskdate")
     private DateTime taskDate;
@@ -18,9 +19,9 @@ public class Task implements Parcelable {
 
     protected Task(Parcel in) {
         if (in.readByte() == 0) {
-            id = null;
+            objectId = null;
         } else {
-            id = in.readInt();
+            objectId = in.readInt();
         }
         name = in.readString();
         active = in.readByte() != 0;
@@ -38,29 +39,12 @@ public class Task implements Parcelable {
         }
     };
 
-    @Override
-    public int describeContents() {
-        return 0;
+    public Integer getObjectId() {
+        return objectId;
     }
 
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        if (id == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(id);
-        }
-        dest.writeString(name);
-        dest.writeByte((byte) (active ? 1 : 0));
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+    public void setObjectId(Integer objectId) {
+        this.objectId = objectId;
     }
 
     public String getName() {
@@ -101,5 +85,22 @@ public class Task implements Parcelable {
 
     public void setUpdated(DateTime updated) {
         this.updated = updated;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        if (objectId == null) {
+            dest.writeByte((byte) 0);
+        } else {
+            dest.writeByte((byte) 1);
+            dest.writeInt(objectId);
+        }
+        dest.writeString(name);
+        dest.writeByte((byte) (active ? 1 : 0));
     }
 }

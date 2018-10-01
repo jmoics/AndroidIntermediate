@@ -11,6 +11,6 @@ public interface TaskService {
     @GET("TASK")
     Call<List<Task>> getTasks();
 
-    @GET("TASK/{id}")
-    Call<List<Task>> getTasks4Id(@Path("id") Integer id);
+    @GET("TASK/{objectId}")
+    Call<List<Task>> getTasks4Id(@Path("objectId") Integer objectId);
 }
