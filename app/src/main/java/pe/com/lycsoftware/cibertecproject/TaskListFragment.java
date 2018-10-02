@@ -18,12 +18,15 @@ import com.google.gson.GsonBuilder;
 
 import org.joda.time.DateTime;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 
 import pe.com.lycsoftware.cibertecproject.model.Task;
+import pe.com.lycsoftware.cibertecproject.model.User;
 import pe.com.lycsoftware.cibertecproject.restService.TaskService;
 import pe.com.lycsoftware.cibertecproject.util.Constants;
 import pe.com.lycsoftware.cibertecproject.util.DateTimeTypeConverter;
+import pe.com.lycsoftware.cibertecproject.util.Networking;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -60,41 +63,31 @@ public class TaskListFragment extends Fragment {
                              Bundle savedInstanceState) {
         View ret = inflater.inflate(R.layout.fragment_task_list, container, false);
         recyclerView = ret.findViewById(R.id.task_list_view);
-        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
+        recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),
+                LinearLayoutManager.VERTICAL));
         recyclerView.setItemAnimator(new DefaultItemAnimator());
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
         Log.d(TAG, "onCreateView: ------ Init task request ------");
-        GsonBuilder gson = new GsonBuilder();
-        gson.registerTypeAdapter(DateTime.class, new DateTimeTypeConverter());
-        Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl(Constants.url)
-                .addConverterFactory(GsonConverterFactory.create(gson.create())) //conversor JSON --> JAVA
-                .build();
 
-        TaskService taskService = retrofit.create(TaskService.class);
-        taskService.getTasks().enqueue(new Callback<List<Task>>() {
+        Networking.getTasks(new Networking.NetworkingCallback<List<Task>>() {
             @Override
-            public void onResponse(Call<List<Task>> call, Response<List<Task>> response) {
-                Log.d(TAG, "onResponse: List of tasks size = " + response.body().size());
-                TaskListFragment.SimpleItemRecyclerViewAdapter lst = new TaskListFragment.SimpleItemRecyclerViewAdapter(response.body());
+            public void onResponse(List<Task> response) {
+                TaskListFragment.SimpleItemRecyclerViewAdapter lst =
+                        new TaskListFragment.SimpleItemRecyclerViewAdapter(response);
                 recyclerView.setAdapter(lst);
+                Log.d(TAG, "onResponse: tasks correctly loaded size = " + response.size());
             }
 
             @Override
-            public void onFailure(Call<List<Task>> call, Throwable t) {
-                Log.d(TAG, "onFailure: ", t);
+            public void onError(Throwable throwable) {
+                Log.d(TAG, "onError: Error in user loading", throwable);
             }
         });
+
         Log.d(TAG, "onCreateView: ------ Finish task request ------");
         return ret;
-    }
-
-    public void onButtonPressed(Uri uri) {
-        if (mListener != null) {
-            mListener.onTaskListFragmentInteraction(uri);
-        }
     }
 
     @Override
@@ -134,13 +127,15 @@ public class TaskListFragment extends Fragment {
         public void onBindViewHolder(final TaskListFragment.ViewHolder holder, int position) {
             Log.d(TAG, "onBindViewHolder: position = " + mValues.get(position).getName());
             holder.mItem = mValues.get(position);
-            holder.farm_name.setText(mValues.get(position).getName());
+            holder.taskName.setText(mValues.get(position).getName());
+            holder.taskDate.setText(new SimpleDateFormat("dd/MM/yyyy")
+                    .format(mValues.get(position).getTaskDate().toDate()));
             holder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     // Get selected song position in song list.
                     int selectedTask = holder.getAdapterPosition();
-                    //mListener.onClickItem(holder);
+                    mListener.onTaskListFragmentInteraction(holder);
                 }
             });
             /*holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -167,13 +162,15 @@ public class TaskListFragment extends Fragment {
 
     class ViewHolder extends RecyclerView.ViewHolder {
         final View mView;
-        final TextView farm_name;
+        final TextView taskName;
+        final TextView taskDate;
         Task mItem;
 
         ViewHolder(View view) {
             super(view);
             mView = view;
-            farm_name = (TextView) view.findViewById(R.id.task_name);
+            taskName = view.findViewById(R.id.taskName);
+            taskDate = view.findViewById(R.id.taskDate);
         }
 
         public Task getmItem() {
@@ -183,6 +180,6 @@ public class TaskListFragment extends Fragment {
 
     public interface OnTaskListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onTaskListFragmentInteraction(Uri uri);
+        void onTaskListFragmentInteraction(TaskListFragment.ViewHolder holder);
     }
 }

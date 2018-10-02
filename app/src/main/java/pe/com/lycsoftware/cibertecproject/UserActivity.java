@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -26,7 +27,7 @@ import pe.com.lycsoftware.cibertecproject.util.Constants;
 public class UserActivity extends AppCompatActivity {
 
     private static final String ARG_USER = "user";
-    private static final String TAG = "UserFragment";
+    private static final String TAG = "UserActivity";
     private TextView txtEmail, txtFullname;
     private ImageView imgUser;
     private User user;
@@ -47,6 +48,14 @@ public class UserActivity extends AppCompatActivity {
         txtFullname = findViewById(R.id.txtFullname);
         imgUser = findViewById(R.id.imgUser);
 
+        imgUser.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(UserActivity.this, UserImageActivity.class);
+                intent.putExtra(Constants.USER_PARAM, user);
+                startActivity(intent);
+            }
+        });
     }
 
     private void setToolbarProperties() {

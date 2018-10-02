@@ -20,4 +20,8 @@
     <string name="activity_user_edtName">Nombre Completo</string>
     <string name="activity_user_edtUrlImage">Dirección de Imagen</string>
     <string name="menu_save">Guardar</string>
+    <string name="activity_task_name">Título</string>
+    <string name="activity_task_timestart">Inicio</string>
+    <string name="activity_task_timefinish">Fin</string>
+    <string name="activity_task_notificationtitle">Notificaciones</string>
 </resources>

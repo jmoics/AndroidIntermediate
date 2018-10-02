@@ -23,10 +23,15 @@
         </activity>
         <activity
             android:name=".UserActivity"
-            android:parentActivityName=".MenuActivity"/>
+            android:parentActivityName=".MenuActivity" />
         <activity
             android:name=".UserEditActivity"
-            android:parentActivityName=".MenuActivity"/>
+            android:parentActivityName=".MenuActivity" />
+        <activity
+            android:name=".UserImageActivity"
+            android:parentActivityName=".MenuActivity" />
+        <activity android:name=".TaskDetailActivity" />
+        <activity android:name=".TaskDetailModActivity"></activity>
     </application>
 
 </manifest>

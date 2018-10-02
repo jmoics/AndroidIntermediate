@@ -9,22 +9,27 @@ import org.joda.time.DateTime;
 
 public class Task implements Parcelable {
     @SerializedName("objectId")
-    private Integer objectId;
+    private String objectId;
     private String name;
-    @SerializedName("taskdate")
-    private DateTime taskDate;
     private boolean active;
+    @SerializedName("task_date")
+    private DateTime taskDate;
+    @SerializedName("task_time_start")
+    private DateTime taskTimeStart;
+    @SerializedName("task_time_finish")
+    private DateTime taskTimeFinish;
     private DateTime created;
     private DateTime updated;
 
     protected Task(Parcel in) {
-        if (in.readByte() == 0) {
-            objectId = null;
-        } else {
-            objectId = in.readInt();
-        }
+        objectId = in.readString();
         name = in.readString();
         active = in.readByte() != 0;
+        taskDate = new DateTime(in.readLong());
+        taskTimeStart = new DateTime(in.readLong());
+        taskTimeFinish = new DateTime(in.readLong());
+        created = new DateTime(in.readLong());
+        updated = new DateTime(in.readLong());
     }
 
     public static final Creator<Task> CREATOR = new Creator<Task>() {
@@ -39,11 +44,11 @@ public class Task implements Parcelable {
         }
     };
 
-    public Integer getObjectId() {
+    public String getObjectId() {
         return objectId;
     }
 
-    public void setObjectId(Integer objectId) {
+    public void setObjectId(String objectId) {
         this.objectId = objectId;
     }
 
@@ -61,6 +66,22 @@ public class Task implements Parcelable {
 
     public void setTaskDate(DateTime taskDate) {
         this.taskDate = taskDate;
+    }
+
+    public DateTime getTaskTimeStart() {
+        return taskTimeStart;
+    }
+
+    public void setTaskTimeStart(DateTime taskTimeStart) {
+        this.taskTimeStart = taskTimeStart;
+    }
+
+    public DateTime getTaskTimeFinish() {
+        return taskTimeFinish;
+    }
+
+    public void setTaskTimeFinish(DateTime taskTimeFinish) {
+        this.taskTimeFinish = taskTimeFinish;
     }
 
     public boolean isActive() {
@@ -94,13 +115,13 @@ public class Task implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        if (objectId == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(objectId);
-        }
+        dest.writeString(objectId);
         dest.writeString(name);
         dest.writeByte((byte) (active ? 1 : 0));
+        dest.writeLong(taskDate.getMillis());
+        dest.writeLong(taskTimeStart.getMillis());
+        dest.writeLong(taskTimeFinish.getMillis());
+        dest.writeLong(created.getMillis());
+        dest.writeLong(updated.getMillis());
     }
 }

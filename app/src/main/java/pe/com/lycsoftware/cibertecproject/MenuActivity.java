@@ -21,14 +21,14 @@ import android.widget.Toast;
 
 import java.util.List;
 
+import pe.com.lycsoftware.cibertecproject.model.Task;
 import pe.com.lycsoftware.cibertecproject.model.User;
 import pe.com.lycsoftware.cibertecproject.util.Constants;
 import pe.com.lycsoftware.cibertecproject.util.Networking;
 
 public class MenuActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener,
-                    TaskListFragment.OnTaskListFragmentInteractionListener,
-                    UserFragment.OnFragmentInteractionListener {
+                    TaskListFragment.OnTaskListFragmentInteractionListener {
 
     private static final String TAG = "MenuActivity";
     private TextView txt_navfullname, txt_navemail;
@@ -41,7 +41,7 @@ public class MenuActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
 
-        //menuSelected = menuSelected != 1 ? menuSelected : R.id.navTask;
+        menuSelected = menuSelected != 0 ? menuSelected : R.id.navTask;
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -72,7 +72,7 @@ public class MenuActivity extends AppCompatActivity
             txt_navemail.setText(user.getEmail());
             txt_navfullname.setText(user.getDisplayName());
 
-            //executeFragment(menuSelected);
+            execute(menuSelected);
         } else {
             Toast.makeText(this,
                     "Existe un error con la conexión al servidor 1", Toast.LENGTH_LONG).show();
@@ -154,12 +154,10 @@ public class MenuActivity extends AppCompatActivity
     }
 
     @Override
-    public void onUserFragmentInteraction(Uri uri) {
-
-    }
-
-    @Override
-    public void onTaskListFragmentInteraction(Uri uri) {
-
+    public void onTaskListFragmentInteraction(TaskListFragment.ViewHolder holder) {
+        Task task = holder.getmItem();
+        Intent intent = new Intent(this, TaskDetailActivity.class);
+        intent.putExtra(Constants.TASK_PARAM, task);
+        startActivityForResult(intent, Constants.TASK_REQUEST_CODE);
     }
 }

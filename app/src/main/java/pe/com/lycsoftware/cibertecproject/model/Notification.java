@@ -9,19 +9,22 @@ import org.joda.time.DateTime;
 
 public class Notification implements Parcelable {
     @SerializedName("objectId")
-    private Integer objectId;
-    private DateTime notificationDate;
+    private String objectId;
+    @SerializedName("task_objectId")
+    private String taskObjectId;
     private boolean active;
+    @SerializedName("notification_date")
+    private DateTime notificationDate;
     private DateTime created;
     private DateTime updated;
 
     protected Notification(Parcel in) {
-        if (in.readByte() == 0) {
-            objectId = null;
-        } else {
-            objectId = in.readInt();
-        }
+        objectId = in.readString();
+        taskObjectId = in.readString();
         active = in.readByte() != 0;
+        notificationDate = new DateTime(in.readLong());
+        created = new DateTime(in.readLong());
+        updated = new DateTime(in.readLong());
     }
 
     public static final Creator<Notification> CREATOR = new Creator<Notification>() {
@@ -36,12 +39,20 @@ public class Notification implements Parcelable {
         }
     };
 
-    public Integer getObjectId() {
+    public String getObjectId() {
         return objectId;
     }
 
-    public void setObjectId(Integer objectId) {
+    public void setObjectId(String objectId) {
         this.objectId = objectId;
+    }
+
+    public String getTaskObjectId() {
+        return taskObjectId;
+    }
+
+    public void setTaskObjectId(String taskObjectId) {
+        this.taskObjectId = taskObjectId;
     }
 
     public DateTime getNotificationDate() {
@@ -83,12 +94,11 @@ public class Notification implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        if (objectId == null) {
-            dest.writeByte((byte) 0);
-        } else {
-            dest.writeByte((byte) 1);
-            dest.writeInt(objectId);
-        }
+        dest.writeString(objectId);
+        dest.writeString(taskObjectId);
         dest.writeByte((byte) (active ? 1 : 0));
+        dest.writeLong(notificationDate.getMillis());
+        dest.writeLong(created.getMillis());
+        dest.writeLong(updated.getMillis());
     }
 }
