@@ -1,9 +1,9 @@
 package pe.com.lycsoftware.cibertecproject;
 
 import android.content.Context;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
@@ -14,29 +14,17 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.google.gson.GsonBuilder;
-
-import org.joda.time.DateTime;
-
 import java.text.SimpleDateFormat;
 import java.util.List;
 
 import pe.com.lycsoftware.cibertecproject.model.Task;
-import pe.com.lycsoftware.cibertecproject.model.User;
-import pe.com.lycsoftware.cibertecproject.restService.TaskService;
-import pe.com.lycsoftware.cibertecproject.util.Constants;
-import pe.com.lycsoftware.cibertecproject.util.DateTimeTypeConverter;
 import pe.com.lycsoftware.cibertecproject.util.Networking;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
 public class TaskListFragment extends Fragment {
     private static final String TAG = "TaskListFragment";
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
+    private SwipeRefreshLayout swipeRefreshLayout;
 
     private OnTaskListFragmentInteractionListener mListener;
 
@@ -61,6 +49,7 @@ public class TaskListFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(TAG, "onCreateView: start");
         View ret = inflater.inflate(R.layout.fragment_task_list, container, false);
         recyclerView = ret.findViewById(R.id.task_list_view);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),
@@ -69,14 +58,28 @@ public class TaskListFragment extends Fragment {
         layoutManager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(layoutManager);
 
-        Log.d(TAG, "onCreateView: ------ Init task request ------");
+        swipeRefreshLayout = ret.findViewById(R.id.swipeRefresh);
+        swipeRefreshLayout.setColorSchemeResources(R.color.colorAccent, R.color.colorPrimary);
+        swipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                listTasks();
+            }
+        });
+
+        Log.d(TAG, "onCreateView: finish");
+        return ret;
+    }
+
+    private void listTasks() {
+        Log.d(TAG, "listTasks: ------ Init task request ------");
 
         Networking.getTasks(new Networking.NetworkingCallback<List<Task>>() {
             @Override
             public void onResponse(List<Task> response) {
-                TaskListFragment.SimpleItemRecyclerViewAdapter lst =
-                        new TaskListFragment.SimpleItemRecyclerViewAdapter(response);
+                TaskAdapter lst = new TaskAdapter(response);
                 recyclerView.setAdapter(lst);
+                swipeRefreshLayout.setRefreshing(false);
                 Log.d(TAG, "onResponse: tasks correctly loaded size = " + response.size());
             }
 
@@ -86,12 +89,12 @@ public class TaskListFragment extends Fragment {
             }
         });
 
-        Log.d(TAG, "onCreateView: ------ Finish task request ------");
-        return ret;
+        Log.d(TAG, "listTasks: ------ Finish task request ------");
     }
 
     @Override
     public void onAttach(Context context) {
+        Log.d(TAG, "onAttach: start");
         super.onAttach(context);
         if (context instanceof OnTaskListFragmentInteractionListener) {
             mListener = (OnTaskListFragmentInteractionListener) context;
@@ -99,6 +102,15 @@ public class TaskListFragment extends Fragment {
             throw new RuntimeException(context.toString()
                     + " must implement OnTaskListFragmentInteractionListener");
         }
+        Log.d(TAG, "onAttach: finish");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        Log.d(TAG, "onResume: start");
+        listTasks();
+        Log.d(TAG, "onResume: finish");
     }
 
     @Override
@@ -107,13 +119,13 @@ public class TaskListFragment extends Fragment {
         mListener = null;
     }
 
-    class SimpleItemRecyclerViewAdapter
+    class TaskAdapter
             extends RecyclerView.Adapter<TaskListFragment.ViewHolder> {
 
-        private final List<Task> mValues;
+        private final List<Task> lstTasks;
 
-        SimpleItemRecyclerViewAdapter(List<Task> items) {
-            mValues = items;
+        TaskAdapter(List<Task> lstTasks) {
+            this.lstTasks = lstTasks;
         }
 
         @Override
@@ -124,18 +136,17 @@ public class TaskListFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(final TaskListFragment.ViewHolder holder, int position) {
-            Log.d(TAG, "onBindViewHolder: position = " + mValues.get(position).getName());
-            holder.mItem = mValues.get(position);
-            holder.taskName.setText(mValues.get(position).getName());
+        public void onBindViewHolder(final ViewHolder holder,
+                                     final int position) {
+            Log.d(TAG, "onBindViewHolder: position = " + lstTasks.get(position).getName());
+            holder.taskName.setText(lstTasks.get(position).getName());
             holder.taskDate.setText(new SimpleDateFormat("dd/MM/yyyy")
-                    .format(mValues.get(position).getTaskDate().toDate()));
-            holder.mView.setOnClickListener(new View.OnClickListener() {
+                    .format(lstTasks.get(position).getTaskDate().toDate()));
+            holder.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    // Get selected song position in song list.
-                    int selectedTask = holder.getAdapterPosition();
-                    mListener.onTaskListFragmentInteraction(holder);
+                    //int selectedTask = holder.getAdapterPosition();
+                    mListener.onTaskListFragmentInteraction(lstTasks.get(position));
                 }
             });
             /*holder.mView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -156,30 +167,23 @@ public class TaskListFragment extends Fragment {
 
         @Override
         public int getItemCount() {
-            return mValues.size();
+            return lstTasks.size();
         }
     }
 
     class ViewHolder extends RecyclerView.ViewHolder {
-        final View mView;
         final TextView taskName;
         final TextView taskDate;
-        Task mItem;
 
         ViewHolder(View view) {
             super(view);
-            mView = view;
             taskName = view.findViewById(R.id.taskName);
             taskDate = view.findViewById(R.id.taskDate);
-        }
-
-        public Task getmItem() {
-            return mItem;
         }
     }
 
     public interface OnTaskListFragmentInteractionListener {
         // TODO: Update argument type and name
-        void onTaskListFragmentInteraction(TaskListFragment.ViewHolder holder);
+        void onTaskListFragmentInteraction(final Task selectedTask);
     }
 }

@@ -119,8 +119,12 @@ public class Task implements Parcelable {
         dest.writeString(name);
         dest.writeByte((byte) (active ? 1 : 0));
         dest.writeLong(taskDate.getMillis());
-        dest.writeLong(taskTimeStart.getMillis());
-        dest.writeLong(taskTimeFinish.getMillis());
+        if (taskTimeStart != null) {
+            dest.writeLong(taskTimeStart.getMillis());
+        }
+        if (taskTimeFinish != null) {
+            dest.writeLong(taskTimeFinish.getMillis());
+        }
         dest.writeLong(created.getMillis());
         dest.writeLong(updated.getMillis());
     }

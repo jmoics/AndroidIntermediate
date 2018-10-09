@@ -1,5 +1,6 @@
 package pe.com.lycsoftware.cibertecproject;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.support.annotation.NonNull;
@@ -19,6 +20,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 import pe.com.lycsoftware.cibertecproject.model.Task;
@@ -35,6 +38,7 @@ public class MenuActivity extends AppCompatActivity
     private ImageView img_navphoto;
     private User user;
     private int menuSelected;
+    private ProgressDialog progressDialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,16 +71,11 @@ public class MenuActivity extends AppCompatActivity
         user.setEmail("jmoics@gmail.com");
         user.setObjectId(1);*/
 
+        progressDialog = ProgressDialog.show(this, "",
+                "Listando Tareas...", false);
+        progressDialog.setCancelable(true);
         loadUser();
-        if (user != null) {
-            txt_navemail.setText(user.getEmail());
-            txt_navfullname.setText(user.getDisplayName());
 
-            execute(menuSelected);
-        } else {
-            Toast.makeText(this,
-                    "Existe un error con la conexión al servidor 1", Toast.LENGTH_LONG).show();
-        }
     }
 
     private void loadUser() {
@@ -84,6 +83,18 @@ public class MenuActivity extends AppCompatActivity
             @Override
             public void onResponse(List<User> response) {
                 user = !response.isEmpty() ? response.get(0) : null;
+                progressDialog.dismiss();
+                if (user != null) {
+                    txt_navemail.setText(user.getEmail());
+                    txt_navfullname.setText(user.getDisplayName());
+                    Glide.with(MenuActivity.this)
+                            .load(user.getUrlImage())
+                            .into(img_navphoto);
+                    execute(menuSelected);
+                } else {
+                    Toast.makeText(MenuActivity.this,
+                            "Existe un error con la conexión al servidor 1", Toast.LENGTH_LONG).show();
+                }
                 Log.d(TAG, "onResponse: User correctly loaded Name = " + user.getDisplayName());
             }
 
@@ -154,10 +165,9 @@ public class MenuActivity extends AppCompatActivity
     }
 
     @Override
-    public void onTaskListFragmentInteraction(TaskListFragment.ViewHolder holder) {
-        Task task = holder.getmItem();
+    public void onTaskListFragmentInteraction(final Task selectedTask) {
         Intent intent = new Intent(this, TaskDetailActivity.class);
-        intent.putExtra(Constants.TASK_PARAM, task);
+        intent.putExtra(Constants.TASK_PARAM, selectedTask);
         startActivityForResult(intent, Constants.TASK_REQUEST_CODE);
     }
 }
