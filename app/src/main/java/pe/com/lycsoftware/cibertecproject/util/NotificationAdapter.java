@@ -19,14 +19,12 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     private static final String TAG = "NotificationAdapter";
     private final List<Notification> lstNotifications;
     private final OnNotificationListener listener;
-    private final boolean editable;
+    private TextView txtNotificationAdd;
 
     public NotificationAdapter(final List<Notification> items,
-                               final OnNotificationListener listener,
-                               final boolean editable) {
+                               final OnNotificationListener listener) {
         this.lstNotifications = items;
         this.listener = listener;
-        this.editable = editable;
     }
 
     @NonNull
@@ -40,7 +38,7 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Log.d(TAG, "onBindViewHolder: position = " + lstNotifications.get(position).getNotificationDate());
-        holder.bind(lstNotifications.get(position), listener, position, editable);
+        holder.bind(lstNotifications.get(position), listener, position);
     }
 
     @Override
@@ -61,11 +59,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
 
         public void bind(final Notification notification,
                          final OnNotificationListener listener,
-                         final int position,
-                         final boolean editable) {
+                         final int position) {
             notificationItem = notification;
-            txtNotificationTime.setText(Constants.getDateFormatter()
-                    .format(notification.getNotificationDate().toDate()));
+            /*txtNotificationTime.setText(Constants.getDateFormatter()
+                    .format(notification.getNotificationDate().toDate()));*/
+            txtNotificationTime.setText(Constants.NOTIFICATION.valueOf(notification.getDescription()).getDesc());
 
             txtNotificationTime.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -74,8 +72,11 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
                 }
             });
 
-            if (editable && position == 0) {
+            /*if (editable) {
                 txtNotificationTimeAdd.setVisibility(View.VISIBLE);
+            }*/
+            if (position == 0) {
+                txtNotificationAdd = txtNotificationTimeAdd;
                 txtNotificationTimeAdd.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -88,6 +89,10 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
         public Notification getNotificationItem() {
             return notificationItem;
         }
+    }
+
+    public TextView getTxtNotificationAdd() {
+        return this.txtNotificationAdd;
     }
 
     public interface OnNotificationListener {

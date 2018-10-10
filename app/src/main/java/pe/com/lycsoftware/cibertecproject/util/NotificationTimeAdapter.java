@@ -62,7 +62,7 @@ public class NotificationTimeAdapter extends RecyclerView.Adapter<NotificationTi
                          final OnNotificationTimeListener listener) {
             this.notificationTime = notificationTime;
             this.txtNotificationTime.setText(notificationTime.getDesc());
-            itemView.setOnClickListener(new View.OnClickListener() {
+            txtNotificationTime.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     listener.onNotificationTimeClick(notificationTime);

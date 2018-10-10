@@ -17,10 +17,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.TimePicker;
 
+import org.joda.time.DateTime;
+
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -40,10 +43,13 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
     private Task task;
     private boolean editMode;
     private CustomDateTimePicker custom;
+    private NotificationAdapter notificationAdapter;
+    private List<Notification> notificationList = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.d(TAG, "onCreate: ");
         setContentView(R.layout.activity_task_detail);
 
         task = getIntent().getParcelableExtra(Constants.TASK_PARAM);
@@ -73,7 +79,12 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
         layoutManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        loadData();
+        notificationAdapter = new NotificationAdapter(notificationList,
+                TaskDetailActivity.this);
+        recyclerView.setAdapter(notificationAdapter);
+
+        showTaskData();
+        loadNotifications();
     }
 
     private void setToolbarProperties() {
@@ -112,7 +123,8 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
             case R.id.action_edit:
                 item.setVisible(false);
                 activateEditMode();
-                loadNotifications();
+                //loadNotifications();
+                notificationAdapter.getTxtNotificationAdd().setVisibility(View.VISIBLE);
                 /*Intent intent = new Intent(this, NotificationActivity.class);
                 intent.putExtra(Constants.TASK_PARAM, task);
                 startActivityForResult(intent, Constants.TASKEDIT_REQUEST_CODE);*/
@@ -123,12 +135,42 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
                 return true;
             case R.id.action_cancel:
                 activateViewMode();
-                loadData();
+                showTaskData();
+                loadNotifications();
+                notificationAdapter.getTxtNotificationAdd().setVisibility(View.GONE);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
+
+    private void showTaskData() {
+        txtName.setText(task.getName());
+        txtTimeStart.setText(Constants.getDateFormatter().format(task.getTaskTimeStart().toDate()));
+        txtTimeFinish.setText(Constants.getDateFormatter().format(task.getTaskTimeFinish().toDate()));
+
+        //loadNotifications();
+    }
+
+    private void loadNotifications() {
+        Networking.getNotifications4Task(task.getObjectId(),
+                new Networking.NetworkingCallback<List<Notification>>() {
+                    @Override
+                    public void onResponse(List<Notification> response) {
+                        notificationList.clear();
+                        notificationList.addAll(response);
+                        notificationAdapter.notifyDataSetChanged();
+                        Log.d(TAG, "onResponse: notification correctly loaded size = "
+                                + response.size());
+                    }
+
+                    @Override
+                    public void onError(Throwable throwable) {
+                        Log.d(TAG, "onError: Error loading");
+                    }
+                });
+    }
+
 
     private void activateEditMode() {
         editMode = true;
@@ -233,31 +275,22 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
         timePickerDialog.show();
     }
 
-    private void loadData() {
-        txtName.setText(task.getName());
-        txtTimeStart.setText(Constants.getDateFormatter().format(task.getTaskTimeStart().toDate()));
-        txtTimeFinish.setText(Constants.getDateFormatter().format(task.getTaskTimeFinish().toDate()));
-
-        loadNotifications();
-    }
-
-    private void loadNotifications() {
-        Networking.getNotifications4Task(task.getObjectId(),
-            new Networking.NetworkingCallback<List<Notification>>() {
-                @Override
-                public void onResponse(List<Notification> response) {
-                    NotificationAdapter lst = new NotificationAdapter(response,
-                            TaskDetailActivity.this, editMode);
-                    recyclerView.setAdapter(lst);
-                    Log.d(TAG, "onResponse: notification correctly loaded size = "
-                            + response.size());
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            case Constants.NOTIFICATION_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    String notificationTime = data.getStringExtra(Constants.NOTIFICATIONTIME_PARAM);
+                    Notification notification = new Notification();
+                    notification.setNotificationDate(task.getTaskDate().minusMinutes(Constants.NOTIFICATION.valueOf(notificationTime).getTime()));
+                    notification.setDescription(notificationTime);
+                    notification.setActive(true);
+                    notificationList.add(notification);
+                    notificationAdapter.notifyDataSetChanged();
                 }
-
-                @Override
-                public void onError(Throwable throwable) {
-                    Log.d(TAG, "onError: Error loading");
-                }
-            });
+                break;
+        }
     }
 
     @Override

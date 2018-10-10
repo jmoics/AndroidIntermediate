@@ -8,6 +8,7 @@ import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.view.MenuItem;
 
 import pe.com.lycsoftware.cibertecproject.util.Constants;
 import pe.com.lycsoftware.cibertecproject.util.NotificationTimeAdapter;
@@ -40,9 +41,19 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
     }
 
     @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+                break;
+        }
+        return true;
+    }
+
+    @Override
     public void onNotificationTimeClick(Constants.NOTIFICATION notificationTime) {
         Intent intent = new Intent();
-        intent.putExtra("notification_time", notificationTime);
+        intent.putExtra(Constants.NOTIFICATIONTIME_PARAM, notificationTime.name());
         setResult(RESULT_OK, intent);
         finish();
     }

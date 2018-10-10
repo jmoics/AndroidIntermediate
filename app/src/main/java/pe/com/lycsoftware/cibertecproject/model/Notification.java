@@ -13,15 +13,19 @@ public class Notification implements Parcelable {
     @SerializedName("task_objectId")
     private String taskObjectId;
     private boolean active;
+    private String description;
     @SerializedName("notification_date")
     private DateTime notificationDate;
     private DateTime created;
     private DateTime updated;
 
+    public Notification(){}
+
     protected Notification(Parcel in) {
         objectId = in.readString();
         taskObjectId = in.readString();
         active = in.readByte() != 0;
+        description = in.readString();
         notificationDate = new DateTime(in.readLong());
         created = new DateTime(in.readLong());
         updated = new DateTime(in.readLong());
@@ -87,6 +91,14 @@ public class Notification implements Parcelable {
         this.updated = updated;
     }
 
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
     @Override
     public int describeContents() {
         return 0;
@@ -97,6 +109,7 @@ public class Notification implements Parcelable {
         dest.writeString(objectId);
         dest.writeString(taskObjectId);
         dest.writeByte((byte) (active ? 1 : 0));
+        dest.writeString(description);
         dest.writeLong(notificationDate.getMillis());
         dest.writeLong(created.getMillis());
         dest.writeLong(updated.getMillis());

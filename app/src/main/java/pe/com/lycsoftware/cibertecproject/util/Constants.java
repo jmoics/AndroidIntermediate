@@ -11,18 +11,20 @@ public class Constants {
     public static final int NOTIFICATION_REQUEST_CODE = 13;
     public static final String USER_PARAM = "user_param";
     public static final String TASK_PARAM = "task_param";
+    public static final String NOTIFICATIONTIME_PARAM = "notificationtime_param";
 
     public static final String MODE_EDIT = "edit";
     public static final String MODE_VIEW = "view";
 
     public enum NOTIFICATION {
-        NONE(0, "Ninguno"),
+        NONE(-1, "Ninguno"),
+        EXACTLY(0, "Hora exacta"),
         MINUTES_01(1, "1 min. antes"),
         MINUTES_10(10, "10 min. antes"),
         MINUTES_30(30, "30 min. antes"),
-        HOUR_01(1, "1 hora antes"),
-        HOUR_06(6, "6 horas antes"),
-        DAY_01(1, "1 día antes");
+        HOUR_01(60, "1 hora antes"),
+        HOUR_06(360, "6 horas antes"),
+        DAY_01(1440, "1 día antes");
 
         private int time;
         private String desc;
