@@ -14,6 +14,7 @@
     <string name="fragment_user_email">Correo Electrónico</string>
     <string name="menu_edit">Editar</string>
     <string name="menu_delete">Eliminar</string>
+    <string name="menu_cancel">Cancelar</string>
     <string name="fragment_user_name">Nombre Completo</string>
     <string name="fragment_user_imagedesc">User url image</string>
     <string name="activity_user_edtEmail">Correo Electrónico</string>
@@ -24,4 +25,5 @@
     <string name="activity_task_timestart">Inicio</string>
     <string name="activity_task_timefinish">Fin</string>
     <string name="activity_task_notificationtitle">Notificaciones</string>
+    <string name="notification_add">Añadir</string>
 </resources>

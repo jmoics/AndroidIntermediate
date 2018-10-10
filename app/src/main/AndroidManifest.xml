@@ -30,9 +30,12 @@
         <activity
             android:name=".UserImageActivity"
             android:parentActivityName=".MenuActivity" />
-        <activity android:name=".TaskDetailActivity"
+        <activity
+            android:name=".TaskDetailActivity"
             android:parentActivityName=".MenuActivity"/>
-        <activity android:name=".TaskDetailModActivity"></activity>
+        <activity
+            android:name=".NotificationActivity"
+            android:parentActivityName=".TaskDetailActivity"/>
     </application>
 
 </manifest>
