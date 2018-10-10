@@ -79,7 +79,7 @@ public class MenuActivity extends AppCompatActivity
     }
 
     private void loadUser() {
-        Networking.getUser4Email("jmoics@gmail.com", new Networking.NetworkingCallback<List<User>>() {
+        Networking.getUser4Email("'jmoics@gmail.com'", new Networking.NetworkingCallback<List<User>>() {
             @Override
             public void onResponse(List<User> response) {
                 user = !response.isEmpty() ? response.get(0) : null;

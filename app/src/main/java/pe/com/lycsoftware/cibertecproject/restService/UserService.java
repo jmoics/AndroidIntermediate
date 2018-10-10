@@ -17,7 +17,7 @@ public interface UserService {
     Call<User> getUser4Id(@Path("objectId") Integer objectId);
 
     @GET("users")
-    Call<List<User>> getUser4Email(@Query("email") String email);
+    Call<List<User>> getUser4Email(@Query("where=email") String email);
 
     @PUT("users/{objectId}")
     Call<User> updateUser(@Path("objectId") String objectId, @Body User user);
