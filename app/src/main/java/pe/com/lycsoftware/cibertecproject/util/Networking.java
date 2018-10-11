@@ -152,6 +152,48 @@ public class Networking {
         });
     }
 
+    public static void createNotification(Notification notification, final NetworkingCallback<Notification> callback) {
+        getNotificationService().createNotification(notification).enqueue(new Callback<Notification>() {
+            @Override
+            public void onResponse(Call<Notification> call, Response<Notification> response) {
+                callback.onResponse(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<Notification> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
+
+    public static void updateNotification(Notification notification, final NetworkingCallback<Notification> callback) {
+        getNotificationService().updateNotification(notification.getObjectId(), notification).enqueue(new Callback<Notification>() {
+            @Override
+            public void onResponse(Call<Notification> call, Response<Notification> response) {
+                callback.onResponse(response.body());
+            }
+
+            @Override
+            public void onFailure(Call<Notification> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
+
+    public static void deleteNotification(Notification notification, final NetworkingCallback<Notification> callback) {
+        getNotificationService().deleteNotification(notification.getObjectId()).enqueue(new Callback<Notification>() {
+            @Override
+            public void onResponse(Call<Notification> call, Response<Notification> response) {
+                callback.onResponse(null);
+            }
+
+            @Override
+            public void onFailure(Call<Notification> call, Throwable t) {
+                callback.onError(t);
+            }
+        });
+    }
+
     public static void getNotifications4Task(String taskObjectId, final NetworkingCallback<List<Notification>> callback) {
         getNotificationService().getNotification4Task("task_objectId='" + taskObjectId + "'").enqueue(new Callback<List<Notification>>() {
             @Override

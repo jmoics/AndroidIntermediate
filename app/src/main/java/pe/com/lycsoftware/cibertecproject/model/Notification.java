@@ -111,7 +111,11 @@ public class Notification implements Parcelable {
         dest.writeByte((byte) (active ? 1 : 0));
         dest.writeString(description);
         dest.writeLong(notificationDate.getMillis());
-        dest.writeLong(created.getMillis());
-        dest.writeLong(updated.getMillis());
+        if (created != null) {
+            dest.writeLong(created.getMillis());
+        }
+        if (updated != null) {
+            dest.writeLong(updated.getMillis());
+        }
     }
 }

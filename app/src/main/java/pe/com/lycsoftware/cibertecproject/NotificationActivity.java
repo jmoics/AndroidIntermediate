@@ -10,17 +10,21 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
+import pe.com.lycsoftware.cibertecproject.model.Notification;
 import pe.com.lycsoftware.cibertecproject.util.Constants;
 import pe.com.lycsoftware.cibertecproject.util.NotificationTimeAdapter;
 
 public class NotificationActivity extends AppCompatActivity implements NotificationTimeAdapter.OnNotificationTimeListener {
 
     private RecyclerView notification_view;
+    private Notification notification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notification);
+
+        notification = getIntent().getParcelableExtra(Constants.NOTIFICATION_PARAM);
 
         setToolbarProperties();
 
@@ -54,6 +58,9 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
     public void onNotificationTimeClick(Constants.NOTIFICATION notificationTime) {
         Intent intent = new Intent();
         intent.putExtra(Constants.NOTIFICATIONTIME_PARAM, notificationTime.name());
+        if (notification != null) {
+            intent.putExtra(Constants.NOTIFICATION_PARAM, notification);
+        }
         setResult(RESULT_OK, intent);
         finish();
     }

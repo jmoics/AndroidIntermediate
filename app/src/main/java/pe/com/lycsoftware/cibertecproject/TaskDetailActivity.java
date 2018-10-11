@@ -17,7 +17,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.TimePicker;
 
 import org.joda.time.DateTime;
@@ -45,6 +44,9 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
     private CustomDateTimePicker custom;
     private NotificationAdapter notificationAdapter;
     private List<Notification> notificationList = new ArrayList<>();
+    private List<Notification> notificationDeleteList = new ArrayList<>();
+    private int notificationPosition;
+    private boolean hasEmptyNotification;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -132,6 +134,7 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
             case R.id.action_delete:
                 return true;
             case R.id.action_save:
+                saveTask();
                 return true;
             case R.id.action_cancel:
                 activateViewMode();
@@ -146,31 +149,119 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
 
     private void showTaskData() {
         txtName.setText(task.getName());
-        txtTimeStart.setText(Constants.getDateFormatter().format(task.getTaskTimeStart().toDate()));
-        txtTimeFinish.setText(Constants.getDateFormatter().format(task.getTaskTimeFinish().toDate()));
+        txtTimeStart.setText(Constants.getDateTimeFormatter().format(task.getTaskTimeStart().toDate()));
+        txtTimeFinish.setText(Constants.getDateTimeFormatter().format(task.getTaskTimeFinish().toDate()));
 
         //loadNotifications();
     }
 
     private void loadNotifications() {
         Networking.getNotifications4Task(task.getObjectId(),
-                new Networking.NetworkingCallback<List<Notification>>() {
+            new Networking.NetworkingCallback<List<Notification>>() {
+                @Override
+                public void onResponse(List<Notification> response) {
+                    notificationList.clear();
+                    if (response.isEmpty()) {
+                        response.add(getEmptyNotification());
+                        hasEmptyNotification = true;
+                    }
+                    notificationList.addAll(response);
+                    notificationAdapter.notifyDataSetChanged();
+                    Log.d(TAG, "onResponse: notification correctly loaded size = "
+                            + response.size());
+                }
+
+                @Override
+                public void onError(Throwable throwable) {
+                    Log.d(TAG, "onError: Error loading");
+                }
+            });
+    }
+
+    private Notification getEmptyNotification() {
+        Notification notification = new Notification();
+        notification.setDescription(Constants.EMPTY_NOTIFICATION);
+        notification.setActive(false);
+        return notification;
+    }
+
+    private void saveTask() {
+        task.setActive(true);
+        try {
+            task.setTaskDate(new DateTime(Constants.getDateTimeFormatter()
+                    .parse(this.txtTimeStart.getText().toString()).getTime()));
+            task.setTaskTimeStart(new DateTime(Constants.getDateTimeFormatter()
+                    .parse(this.txtTimeStart.getText().toString()).getTime()));
+            task.setTaskTimeFinish(new DateTime(Constants.getDateTimeFormatter()
+                    .parse(this.txtTimeFinish.getText().toString()).getTime()));
+        } catch (ParseException e) {
+            Log.e(TAG, "saveTask: error parsing date in saving task", e);
+        }
+        Networking.updateTask(task, new Networking.NetworkingCallback<Task>() {
+            @Override
+            public void onResponse(Task response) {
+                saveNotifications();
+                finish();
+            }
+
+            @Override
+            public void onError(Throwable throwable) {
+                Log.e(TAG, "onError: error saving task", throwable);
+            }
+        });
+    }
+
+    private void saveNotifications() {
+        if (!notificationDeleteList.isEmpty()) {
+            for (final Notification notification : notificationDeleteList) {
+                Networking.deleteNotification(notification, new Networking.NetworkingCallback<Notification>() {
                     @Override
-                    public void onResponse(List<Notification> response) {
-                        notificationList.clear();
-                        notificationList.addAll(response);
-                        notificationAdapter.notifyDataSetChanged();
-                        Log.d(TAG, "onResponse: notification correctly loaded size = "
-                                + response.size());
+                    public void onResponse(Notification response) {
+                        Log.d(TAG, "onResponse: notification " + notification.getDescription() + "deleted");
                     }
 
                     @Override
                     public void onError(Throwable throwable) {
-                        Log.d(TAG, "onError: Error loading");
+                        Log.e(TAG, "onError: error deleting notification", throwable);
                     }
                 });
-    }
+            }
+        }
+        if (!notificationList.isEmpty()) {
+            if (!hasEmptyNotification) {
+                for (final Notification notification : notificationList) {
+                    notification.setNotificationDate(task.getTaskTimeStart()
+                            .minusMinutes(Constants.NOTIFICATION.valueOf(notification.getDescription()).getTime()));
+                    if (notification.getObjectId() != null) {
+                        Networking.updateNotification(notification, new Networking.NetworkingCallback<Notification>() {
+                            @Override
+                            public void onResponse(Notification response) {
+                                Log.d(TAG, "onResponse: notification " + notification.getDescription() + "updated");
+                            }
 
+                            @Override
+                            public void onError(Throwable throwable) {
+                                Log.e(TAG, "onError: error updating notification", throwable);
+                            }
+                        });
+                    } else {
+                        notification.setTaskObjectId(task.getObjectId());
+                        Networking.createNotification(notification, new Networking.NetworkingCallback<Notification>() {
+                            @Override
+                            public void onResponse(Notification response) {
+                                Log.d(TAG, "onResponse: notification " + notification.getDescription() + " created");
+                            }
+
+                            @Override
+                            public void onError(Throwable throwable) {
+                                Log.e(TAG, "onError: error creating notification", throwable);
+                            }
+                        });
+                    }
+                }
+            }
+        }
+    }
 
     private void activateEditMode() {
         editMode = true;
@@ -228,7 +319,7 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
     private void datePicker(final EditText editText, final Calendar calendar){
         final Calendar cur = Calendar.getInstance();
         try {
-            cur.setTime(Constants.getDateFormatter().parse(editText.getText().toString()));
+            cur.setTime(Constants.getDateTimeFormatter().parse(editText.getText().toString()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -253,7 +344,7 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
     private void tiemPicker(final EditText editText, final Calendar calendar){
         final Calendar cur = Calendar.getInstance();
         try {
-            cur.setTime(Constants.getDateFormatter().parse(editText.getText().toString()));
+            cur.setTime(Constants.getDateTimeFormatter().parse(editText.getText().toString()));
         } catch (ParseException e) {
             e.printStackTrace();
         }
@@ -269,7 +360,7 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
                     //mHour = hourOfDay;
                     //mMinute = minute;
 
-                    editText.setText(Constants.getDateFormatter().format(calendar.getTime()));
+                    editText.setText(Constants.getDateTimeFormatter().format(calendar.getTime()));
                 }
             }, cur.get(Calendar.HOUR_OF_DAY), cur.get(Calendar.MINUTE), false);
         timePickerDialog.show();
@@ -283,10 +374,31 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
                 if (resultCode == RESULT_OK) {
                     String notificationTime = data.getStringExtra(Constants.NOTIFICATIONTIME_PARAM);
                     Notification notification = new Notification();
-                    notification.setNotificationDate(task.getTaskDate().minusMinutes(Constants.NOTIFICATION.valueOf(notificationTime).getTime()));
+                    //notification.setNotificationDate(task.getTaskDate().minusMinutes(Constants.NOTIFICATION.valueOf(notificationTime).getTime()));
                     notification.setDescription(notificationTime);
                     notification.setActive(true);
+                    if (hasEmptyNotification) {
+                        notificationList.clear();
+                        hasEmptyNotification = false;
+                    }
                     notificationList.add(notification);
+                    notificationAdapter.notifyDataSetChanged();
+                }
+                break;
+            case Constants.NOTIFICATIONEDIT_REQUEST_CODE:
+                if (resultCode == RESULT_OK) {
+                    String notificationTime = data.getStringExtra(Constants.NOTIFICATIONTIME_PARAM);
+                    Notification notification = data.getParcelableExtra(Constants.NOTIFICATION_PARAM);
+                    notification.setDescription(notificationTime);
+                    //notification.setNotificationDate(task.getTaskDate().minusMinutes(Constants.NOTIFICATION.valueOf(notificationTime).getTime()));
+                    Notification notificationDelete = notificationList.remove(notificationPosition);
+                    if (!notificationTime.equals(Constants.NOTIFICATION.NONE.name())) {
+                        notificationList.add(notificationPosition, notification);
+                    } else {
+                        if (notificationDelete.getObjectId() != null) {
+                            notificationDeleteList.add(notificationDelete);
+                        }
+                    }
                     notificationAdapter.notifyDataSetChanged();
                 }
                 break;
@@ -294,8 +406,11 @@ public class TaskDetailActivity extends AppCompatActivity implements Notificatio
     }
 
     @Override
-    public void onNotificationClick(Notification notification) {
-
+    public void onNotificationClick(Notification notification, int position) {
+        Intent intent = new Intent(this, NotificationActivity.class);
+        notificationPosition = position;
+        intent.putExtra(Constants.NOTIFICATION_PARAM, notification);
+        startActivityForResult(intent, Constants.NOTIFICATIONEDIT_REQUEST_CODE);
     }
 
     @Override

@@ -9,9 +9,12 @@ public class Constants {
     public static final int USEREDIT_REQUEST_CODE = 11;
     public static final int TASK_REQUEST_CODE = 12;
     public static final int NOTIFICATION_REQUEST_CODE = 13;
+    public static final int NOTIFICATIONEDIT_REQUEST_CODE = 14;
     public static final String USER_PARAM = "user_param";
     public static final String TASK_PARAM = "task_param";
+    public static final String NOTIFICATION_PARAM = "notification_param";
     public static final String NOTIFICATIONTIME_PARAM = "notificationtime_param";
+    public static final String EMPTY_NOTIFICATION = "Añadir recordatorio";
 
     public static final String MODE_EDIT = "edit";
     public static final String MODE_VIEW = "view";
@@ -44,8 +47,11 @@ public class Constants {
         }
     }
 
-    public static SimpleDateFormat getDateFormatter() {
+    public static SimpleDateFormat getDateTimeFormatter() {
         return new SimpleDateFormat("dd/MM/yyyy HH:mm");
         //dateFormat = new SimpleDateFormat("dd/MMM/yyyy h:mm a");
+    }
+    public static SimpleDateFormat getDateFormatter() {
+        return new SimpleDateFormat("dd/MM/yyyy");
     }
 }
