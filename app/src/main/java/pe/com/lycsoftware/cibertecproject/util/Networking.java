@@ -6,7 +6,9 @@ import com.google.gson.GsonBuilder;
 
 import org.joda.time.DateTime;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import okhttp3.OkHttpClient;
 import okhttp3.logging.HttpLoggingInterceptor;
@@ -76,7 +78,10 @@ public class Networking {
     }
 
     public static void getUser4Email(String email, final NetworkingCallback<List<User>> callback) {
-        getUserService().getUser4Email(email).enqueue(new Callback<List<User>>() {
+        /*Map<String,String> map = new HashMap<>();
+        map.put("where", "email="+email);
+        getUserService().getUser4Email(map).enqueue(new Callback<List<User>>() {*/
+        getUserService().getUser4Email("email='" + email + "'").enqueue(new Callback<List<User>>() {
             @Override
             public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                 List<User> users = response.body();
@@ -148,7 +153,7 @@ public class Networking {
     }
 
     public static void getNotifications4Task(String taskObjectId, final NetworkingCallback<List<Notification>> callback) {
-        getNotificationService().getNotification4Task(taskObjectId).enqueue(new Callback<List<Notification>>() {
+        getNotificationService().getNotification4Task("task_objectId='" + taskObjectId + "'").enqueue(new Callback<List<Notification>>() {
             @Override
             public void onResponse(Call<List<Notification>> call, Response<List<Notification>> response) {
                 List<Notification> notifications = response.body();

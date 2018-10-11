@@ -10,5 +10,5 @@ import retrofit2.http.Query;
 
 public interface NotificationService {
     @GET("notification")
-    Call<List<Notification>> getNotification4Task(@Query("taskObjectId") String taskObjectId);
+    Call<List<Notification>> getNotification4Task(@Query("where") String taskObjectId);
 }
