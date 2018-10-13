@@ -1,7 +1,9 @@
 package pe.com.lycsoftware.cibertecproject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -18,6 +20,7 @@ import java.text.SimpleDateFormat;
 import java.util.List;
 
 import pe.com.lycsoftware.cibertecproject.model.Task;
+import pe.com.lycsoftware.cibertecproject.util.Constants;
 import pe.com.lycsoftware.cibertecproject.util.Networking;
 
 public class TaskListFragment extends Fragment {
@@ -25,7 +28,7 @@ public class TaskListFragment extends Fragment {
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
     private SwipeRefreshLayout swipeRefreshLayout;
-
+    private FloatingActionButton fabAddTask;
     private OnTaskListFragmentInteractionListener mListener;
 
     public TaskListFragment() {
@@ -51,6 +54,16 @@ public class TaskListFragment extends Fragment {
                              Bundle savedInstanceState) {
         Log.d(TAG, "onCreateView: start");
         View ret = inflater.inflate(R.layout.fragment_task_list, container, false);
+        fabAddTask = ret.findViewById(R.id.fabAddTask);
+        fabAddTask.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v)
+            {
+                Intent intent = new Intent(getActivity(), TaskDetailActivity.class);
+                startActivityForResult(intent, Constants.TASKCREATE_REQUEST_CODE);
+            }
+        });
+
         recyclerView = ret.findViewById(R.id.task_list_view);
         recyclerView.addItemDecoration(new DividerItemDecoration(getActivity(),
                 LinearLayoutManager.VERTICAL));

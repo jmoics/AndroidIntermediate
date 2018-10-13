@@ -63,7 +63,9 @@ public class NotificationAdapter extends RecyclerView.Adapter<NotificationAdapte
             notificationItem = notification;
             /*txtNotificationTime.setText(Constants.getDateTimeFormatter()
                     .format(notification.getNotificationDate().toDate()));*/
-            txtNotificationTime.setText(Constants.NOTIFICATION.valueOf(notification.getDescription()).getDesc());
+            txtNotificationTime.setText(notification.getDescription().equals(Constants.EMPTY_NOTIFICATION)
+                    ? Constants.EMPTY_NOTIFICATION
+                    : Constants.NOTIFICATION.valueOf(notification.getDescription()).getDesc());
 
             txtNotificationTime.setOnClickListener(new View.OnClickListener() {
                 @Override

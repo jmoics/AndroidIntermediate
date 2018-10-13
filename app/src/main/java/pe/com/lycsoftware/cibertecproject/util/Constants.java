@@ -7,9 +7,10 @@ public class Constants {
 
     public static final int USER_REQUEST_CODE = 10;
     public static final int USEREDIT_REQUEST_CODE = 11;
-    public static final int TASK_REQUEST_CODE = 12;
-    public static final int NOTIFICATION_REQUEST_CODE = 13;
-    public static final int NOTIFICATIONEDIT_REQUEST_CODE = 14;
+    public static final int TASKEDIT_REQUEST_CODE = 12;
+    public static final int TASKCREATE_REQUEST_CODE = 13;
+    public static final int NOTIFICATIONCREATE_REQUEST_CODE = 14;
+    public static final int NOTIFICATIONEDIT_REQUEST_CODE = 15;
     public static final String USER_PARAM = "user_param";
     public static final String TASK_PARAM = "task_param";
     public static final String NOTIFICATION_PARAM = "notification_param";
