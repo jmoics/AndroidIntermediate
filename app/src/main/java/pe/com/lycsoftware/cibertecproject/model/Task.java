@@ -7,7 +7,9 @@ import com.google.gson.annotations.SerializedName;
 
 import org.joda.time.DateTime;
 
-public class Task implements Parcelable {
+public class Task
+        implements Parcelable
+{
     @SerializedName("objectId")
     private String objectId;
     private String name;
@@ -21,7 +23,11 @@ public class Task implements Parcelable {
     private DateTime created;
     private DateTime updated;
 
-    protected Task(Parcel in) {
+    public Task()
+    { }
+
+    protected Task(Parcel in)
+    {
         objectId = in.readString();
         name = in.readString();
         active = in.readByte() != 0;
@@ -32,89 +38,110 @@ public class Task implements Parcelable {
         updated = new DateTime(in.readLong());
     }
 
-    public static final Creator<Task> CREATOR = new Creator<Task>() {
+    public static final Creator<Task> CREATOR = new Creator<Task>()
+    {
         @Override
-        public Task createFromParcel(Parcel in) {
+        public Task createFromParcel(Parcel in)
+        {
             return new Task(in);
         }
 
         @Override
-        public Task[] newArray(int size) {
+        public Task[] newArray(int size)
+        {
             return new Task[size];
         }
     };
 
-    public String getObjectId() {
+    public String getObjectId()
+    {
         return objectId;
     }
 
-    public void setObjectId(String objectId) {
+    public void setObjectId(String objectId)
+    {
         this.objectId = objectId;
     }
 
-    public String getName() {
+    public String getName()
+    {
         return name;
     }
 
-    public void setName(String name) {
+    public void setName(String name)
+    {
         this.name = name;
     }
 
-    public DateTime getTaskDate() {
+    public DateTime getTaskDate()
+    {
         return taskDate;
     }
 
-    public void setTaskDate(DateTime taskDate) {
+    public void setTaskDate(DateTime taskDate)
+    {
         this.taskDate = taskDate;
     }
 
-    public DateTime getTaskTimeStart() {
+    public DateTime getTaskTimeStart()
+    {
         return taskTimeStart;
     }
 
-    public void setTaskTimeStart(DateTime taskTimeStart) {
+    public void setTaskTimeStart(DateTime taskTimeStart)
+    {
         this.taskTimeStart = taskTimeStart;
     }
 
-    public DateTime getTaskTimeFinish() {
+    public DateTime getTaskTimeFinish()
+    {
         return taskTimeFinish;
     }
 
-    public void setTaskTimeFinish(DateTime taskTimeFinish) {
+    public void setTaskTimeFinish(DateTime taskTimeFinish)
+    {
         this.taskTimeFinish = taskTimeFinish;
     }
 
-    public boolean isActive() {
+    public boolean isActive()
+    {
         return active;
     }
 
-    public void setActive(boolean active) {
+    public void setActive(boolean active)
+    {
         this.active = active;
     }
 
-    public DateTime getCreated() {
+    public DateTime getCreated()
+    {
         return created;
     }
 
-    public void setCreated(DateTime created) {
+    public void setCreated(DateTime created)
+    {
         this.created = created;
     }
 
-    public DateTime getUpdated() {
+    public DateTime getUpdated()
+    {
         return updated;
     }
 
-    public void setUpdated(DateTime updated) {
+    public void setUpdated(DateTime updated)
+    {
         this.updated = updated;
     }
 
     @Override
-    public int describeContents() {
+    public int describeContents()
+    {
         return 0;
     }
 
     @Override
-    public void writeToParcel(Parcel dest, int flags) {
+    public void writeToParcel(Parcel dest, int flags)
+    {
         dest.writeString(objectId);
         dest.writeString(name);
         dest.writeByte((byte) (active ? 1 : 0));
@@ -125,7 +152,11 @@ public class Task implements Parcelable {
         if (taskTimeFinish != null) {
             dest.writeLong(taskTimeFinish.getMillis());
         }
-        dest.writeLong(created.getMillis());
-        dest.writeLong(updated.getMillis());
+        if (created != null) {
+            dest.writeLong(created.getMillis());
+        }
+        if (updated != null) {
+            dest.writeLong(updated.getMillis());
+        }
     }
 }

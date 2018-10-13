@@ -16,9 +16,10 @@ public class Constants {
     public static final String NOTIFICATION_PARAM = "notification_param";
     public static final String NOTIFICATIONTIME_PARAM = "notificationtime_param";
     public static final String EMPTY_NOTIFICATION = "Añadir recordatorio";
+    public static final String MODE_EDIT = "mode_edit";
+    public static final String MODE_CREATE = "mode_create";
+    public static final String MODE_VIEW = "mode_view";
 
-    public static final String MODE_EDIT = "edit";
-    public static final String MODE_VIEW = "view";
 
     public enum NOTIFICATION {
         NONE(-1, "Ninguno"),

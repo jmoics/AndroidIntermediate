@@ -2,9 +2,11 @@ package pe.com.lycsoftware.cibertecproject.restService;
 
 import java.util.List;
 
+import pe.com.lycsoftware.cibertecproject.model.Notification;
 import pe.com.lycsoftware.cibertecproject.model.Task;
 import retrofit2.Call;
 import retrofit2.http.Body;
+import retrofit2.http.DELETE;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
 import retrofit2.http.PUT;
@@ -22,4 +24,7 @@ public interface TaskService {
 
     @PUT("TASK/{objectId}")
     Call<Task> updateTask(@Path("objectId") String objectId, @Body Task task);
+
+    @DELETE("TASK/{objectId}")
+    Call<Task> deleteTask(@Path("objectId")String objectId);
 }
