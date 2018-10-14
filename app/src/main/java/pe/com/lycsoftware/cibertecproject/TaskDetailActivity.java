@@ -68,19 +68,33 @@ public class TaskDetailActivity
 
         txtName = findViewById(R.id.txtName);
         txtTimeStart = findViewById(R.id.txtTimeStart);
-        txtTimeStart.setOnClickListener(new View.OnClickListener()
+        /*txtTimeStart.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
             {
                 showDatePickerDialog(txtTimeStart);
             }
+        });*/
+        txtTimeStart.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(final View v, final boolean hasFocus)
+            {
+                showDatePickerDialog(txtTimeStart);
+            }
         });
         txtTimeFinish = findViewById(R.id.txtTimeFinish);
-        txtTimeFinish.setOnClickListener(new View.OnClickListener()
+        /*txtTimeFinish.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View v)
+            {
+                showDatePickerDialog(txtTimeFinish);
+            }
+        });*/
+        txtTimeFinish.setOnFocusChangeListener(new View.OnFocusChangeListener() {
+            @Override
+            public void onFocusChange(final View v, final boolean hasFocus)
             {
                 showDatePickerDialog(txtTimeFinish);
             }

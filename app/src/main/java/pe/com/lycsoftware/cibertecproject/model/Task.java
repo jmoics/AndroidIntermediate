@@ -20,8 +20,6 @@ public class Task
     private DateTime taskTimeStart;
     @SerializedName("task_time_finish")
     private DateTime taskTimeFinish;
-    private DateTime created;
-    private DateTime updated;
 
     public Task()
     { }
@@ -34,8 +32,6 @@ public class Task
         taskDate = new DateTime(in.readLong());
         taskTimeStart = new DateTime(in.readLong());
         taskTimeFinish = new DateTime(in.readLong());
-        created = new DateTime(in.readLong());
-        updated = new DateTime(in.readLong());
     }
 
     public static final Creator<Task> CREATOR = new Creator<Task>()
@@ -113,26 +109,6 @@ public class Task
         this.active = active;
     }
 
-    public DateTime getCreated()
-    {
-        return created;
-    }
-
-    public void setCreated(DateTime created)
-    {
-        this.created = created;
-    }
-
-    public DateTime getUpdated()
-    {
-        return updated;
-    }
-
-    public void setUpdated(DateTime updated)
-    {
-        this.updated = updated;
-    }
-
     @Override
     public int describeContents()
     {
@@ -151,12 +127,6 @@ public class Task
         }
         if (taskTimeFinish != null) {
             dest.writeLong(taskTimeFinish.getMillis());
-        }
-        if (created != null) {
-            dest.writeLong(created.getMillis());
-        }
-        if (updated != null) {
-            dest.writeLong(updated.getMillis());
         }
     }
 }

@@ -18,8 +18,6 @@ public class Notification
     private String description;
     @SerializedName("notification_date")
     private DateTime notificationDate;
-    private DateTime created;
-    private DateTime updated;
 
     public Notification() {}
 
@@ -30,8 +28,6 @@ public class Notification
         active = in.readByte() != 0;
         description = in.readString();
         notificationDate = new DateTime(in.readLong());
-        created = new DateTime(in.readLong());
-        updated = new DateTime(in.readLong());
     }
 
     public static final Creator<Notification> CREATOR = new Creator<Notification>()
@@ -89,26 +85,6 @@ public class Notification
         this.active = active;
     }
 
-    public DateTime getCreated()
-    {
-        return created;
-    }
-
-    public void setCreated(DateTime created)
-    {
-        this.created = created;
-    }
-
-    public DateTime getUpdated()
-    {
-        return updated;
-    }
-
-    public void setUpdated(DateTime updated)
-    {
-        this.updated = updated;
-    }
-
     public String getDescription()
     {
         return description;
@@ -134,12 +110,6 @@ public class Notification
         dest.writeString(description);
         if (notificationDate != null) {
             dest.writeLong(notificationDate.getMillis());
-        }
-        if (created != null) {
-            dest.writeLong(created.getMillis());
-        }
-        if (updated != null) {
-            dest.writeLong(updated.getMillis());
         }
     }
 }
