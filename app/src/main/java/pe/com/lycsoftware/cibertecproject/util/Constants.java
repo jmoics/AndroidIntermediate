@@ -1,5 +1,8 @@
 package pe.com.lycsoftware.cibertecproject.util;
 
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+
 import java.text.SimpleDateFormat;
 
 public class Constants {
@@ -60,7 +63,7 @@ public class Constants {
         }
     }
 
-    public static SimpleDateFormat getDateTimeFormatter() {
+    /*public static SimpleDateFormat getDateTimeFormatter() {
         return new SimpleDateFormat("dd/MM/yyyy HH:mm");
         //dateFormat = new SimpleDateFormat("dd/MMM/yyyy h:mm a");
     }
@@ -70,5 +73,17 @@ public class Constants {
 
     public static SimpleDateFormat getTimeFormatter() {
         return new SimpleDateFormat("HH:mm");
+    }*/
+
+    public static DateTimeFormatter getDateTimeFormatter() {
+        return DateTimeFormat.forPattern("dd/MM/yyyy HH:mm");
+        //dateFormat = new SimpleDateFormat("dd/MMM/yyyy h:mm a");
+    }
+    public static DateTimeFormatter getDateFormatter() {
+        return DateTimeFormat.forPattern("dd/MM/yyyy");
+    }
+
+    public static DateTimeFormatter getTimeFormatter() {
+        return DateTimeFormat.forPattern("HH:mm");
     }
 }

@@ -177,12 +177,12 @@ public class TaskDetailActivity
     private void showTaskData()
     {
         if (uiMode.equals(Constants.MODE_CREATE)) {
-            txtTimeStart.setText(Constants.getDateTimeFormatter().format(new DateTime().toDate()));
-            txtTimeFinish.setText(Constants.getDateTimeFormatter().format(new DateTime().toDate()));
+            txtTimeStart.setText(Constants.getDateTimeFormatter().print(new DateTime()));
+            txtTimeFinish.setText(Constants.getDateTimeFormatter().print(new DateTime().plusHours(1)));
         } else {
             txtName.setText(task.getName());
-            txtTimeStart.setText(Constants.getDateTimeFormatter().format(task.getTaskTimeStart().toDate()));
-            txtTimeFinish.setText(Constants.getDateTimeFormatter().format(task.getTaskTimeFinish().toDate()));
+            txtTimeStart.setText(Constants.getDateTimeFormatter().print(task.getTaskTimeStart()));
+            txtTimeFinish.setText(Constants.getDateTimeFormatter().print(task.getTaskTimeFinish()));
         }
         //loadNotifications();
     }
@@ -219,7 +219,8 @@ public class TaskDetailActivity
         }
     }
 
-    private void addEmptyNotifications() {
+    private void addEmptyNotifications()
+    {
         hasEmptyNotification = true;
         notificationList.add(getEmptyNotification());
         notificationAdapter.notifyDataSetChanged();
@@ -237,19 +238,10 @@ public class TaskDetailActivity
     {
         task.setActive(true);
         task.setName(this.txtName.getText().toString());
-        try {
-            task.setTaskDate(new DateTime(
-                    Constants.getDateFormatter().parse(this.txtTimeStart.getText().toString())
-                             .getTime()));
-            task.setTaskTimeStart(new DateTime(
-                    Constants.getDateTimeFormatter().parse(this.txtTimeStart.getText().toString())
-                             .getTime()));
-            task.setTaskTimeFinish(new DateTime(
-                    Constants.getDateTimeFormatter().parse(this.txtTimeFinish.getText().toString())
-                             .getTime()));
-        } catch (ParseException e) {
-            Log.e(TAG, "saveTask: error parsing date in saving task", e);
-        }
+        task.setTaskDate(Constants.getDateFormatter().parseDateTime(this.txtTimeStart.getText().toString().split(" ")[0]));
+        task.setTaskTimeStart(Constants.getDateTimeFormatter().parseDateTime(this.txtTimeStart.getText().toString()));
+        task.setTaskTimeFinish(Constants.getDateTimeFormatter().parseDateTime(this.txtTimeFinish.getText().toString()));
+
         if (task.getObjectId() != null) {
             Networking.updateTask(task, new Networking.NetworkingCallback<Task>()
             {
@@ -269,7 +261,8 @@ public class TaskDetailActivity
                 }
             });
         } else {
-            Networking.createTask(task, new Networking.NetworkingCallback<Task>() {
+            Networking.createTask(task, new Networking.NetworkingCallback<Task>()
+            {
                 @Override
                 public void onResponse(final Task response)
                 {
@@ -292,86 +285,78 @@ public class TaskDetailActivity
     {
         if (!notificationDeleteList.isEmpty()) {
             for (final Notification notification : notificationDeleteList) {
-                Networking.deleteNotification(notification,
-                        new Networking.NetworkingCallback<Notification>()
-                        {
-                            @Override
-                            public void onResponse(Notification response)
-                            {
-                                Log.d(TAG, "onResponse: notification " + notification
-                                        .getDescription() + "deleted");
-                            }
+                Networking.deleteNotification(notification, new Networking.NetworkingCallback<Notification>()
+                {
+                    @Override
+                    public void onResponse(Notification response)
+                    {
+                        Log.d(TAG, "onResponse: notification " + notification.getDescription() + "deleted");
+                    }
 
-                            @Override
-                            public void onError(Throwable throwable)
-                            {
-                                Log.e(TAG, "onError: error deleting notification", throwable);
-                            }
-                        });
+                    @Override
+                    public void onError(Throwable throwable)
+                    {
+                        Log.e(TAG, "onError: error deleting notification", throwable);
+                    }
+                });
             }
         }
         if (!notificationList.isEmpty()) {
             if (!hasEmptyNotification) {
                 for (final Notification notification : notificationList) {
                     notification.setNotificationDate(task.getTaskTimeStart().minusMinutes(
-                            Constants.NOTIFICATION.valueOf(notification.getDescription())
-                                                  .getTime()));
+                            Constants.NOTIFICATION.valueOf(notification.getDescription()).getTime()));
                     if (notification.getObjectId() != null) {
-                        Networking.updateNotification(notification,
-                            new Networking.NetworkingCallback<Notification>()
+                        Networking.updateNotification(notification, new Networking.NetworkingCallback<Notification>()
+                        {
+                            @Override
+                            public void onResponse(Notification response)
                             {
-                                @Override
-                                public void onResponse(Notification response)
-                                {
-                                    Log.d(TAG, "onResponse: notification " + notification
-                                            .getDescription() + "updated");
-                                }
+                                Log.d(TAG, "onResponse: notification " + notification.getDescription() + "updated");
+                            }
 
-                                @Override
-                                public void onError(Throwable throwable)
-                                {
-                                    Log.e(TAG, "onError: error updating notification",
-                                            throwable);
-                                }
-                            });
+                            @Override
+                            public void onError(Throwable throwable)
+                            {
+                                Log.e(TAG, "onError: error updating notification", throwable);
+                            }
+                        });
                     } else {
                         notification.setTaskObjectId(task.getObjectId());
-                        Networking.createNotification(notification,
-                            new Networking.NetworkingCallback<Notification>()
+                        Networking.createNotification(notification, new Networking.NetworkingCallback<Notification>()
+                        {
+                            @Override
+                            public void onResponse(Notification response)
                             {
-                                @Override
-                                public void onResponse(Notification response)
-                                {
-                                    Log.d(TAG, "onResponse: notification " + notification
-                                            .getDescription() + " created");
-                                }
+                                Log.d(TAG, "onResponse: notification " + notification.getDescription() + " created");
+                            }
 
-                                @Override
-                                public void onError(Throwable throwable)
-                                {
-                                    Log.e(TAG, "onError: error creating notification",
-                                            throwable);
-                                }
-                            });
+                            @Override
+                            public void onError(Throwable throwable)
+                            {
+                                Log.e(TAG, "onError: error creating notification", throwable);
+                            }
+                        });
                     }
                 }
             }
         }
     }
 
-    private void scheduleNotifications() {
+    private void scheduleNotifications()
+    {
         //int count = 10;
         for (Notification notification : notificationList) {
             Log.d(TAG, "scheduleNotifications: Notification scheduled at "
-                    + Constants.getDateTimeFormatter().format(notification.getNotificationDate().toDate()));
+                    + Constants.getDateTimeFormatter().print(notification.getNotificationDate()));
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
             Intent notificationIntent = new Intent(this, AlarmReceiver.class);
             notificationIntent.putExtra(Constants.TASK_PARAM, task);
             notificationIntent.putExtra(Constants.NOTIFICATION_PARAM, notification);
-            PendingIntent broadcast = PendingIntent.getBroadcast(this,
-                    notification.getNotificationDate().getMillisOfDay(),
-                    notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent broadcast = PendingIntent
+                    .getBroadcast(this, notification.getNotificationDate().getMillisOfDay(), notificationIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
 
             /*Calendar cal = Calendar.getInstance();
             cal.add(Calendar.SECOND, count);*/
@@ -381,16 +366,17 @@ public class TaskDetailActivity
         }
     }
 
-    private void unscheduleNotifications() {
+    private void unscheduleNotifications()
+    {
         for (Notification notification : notificationDeleteList) {
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
             Intent notificationIntent = new Intent(this, AlarmReceiver.class);
             notificationIntent.putExtra(Constants.TASK_PARAM, task);
             notificationIntent.putExtra(Constants.NOTIFICATION_PARAM, notification);
-            PendingIntent broadcast = PendingIntent.getBroadcast(this,
-                    notification.getNotificationDate().getMillisOfDay(),
-                    notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent broadcast = PendingIntent
+                    .getBroadcast(this, notification.getNotificationDate().getMillisOfDay(), notificationIntent,
+                            PendingIntent.FLAG_UPDATE_CURRENT);
 
             alarmManager.cancel(broadcast);
         }
@@ -399,7 +385,8 @@ public class TaskDetailActivity
     private void deleteAll()
     {
         for (final Notification notification : notificationList) {
-            Networking.deleteNotification(notification, new Networking.NetworkingCallback<Notification>() {
+            Networking.deleteNotification(notification, new Networking.NetworkingCallback<Notification>()
+            {
                 @Override
                 public void onResponse(final Notification response)
                 {
@@ -414,7 +401,8 @@ public class TaskDetailActivity
             });
         }
 
-        Networking.deleteTask(task, new Networking.NetworkingCallback<Task>() {
+        Networking.deleteTask(task, new Networking.NetworkingCallback<Task>()
+        {
             @Override
             public void onResponse(final Task response)
             {
@@ -461,9 +449,9 @@ public class TaskDetailActivity
 
             @Override
             public void onSet(Dialog dialog, Calendar calendarSelected, Date dateSelected, int year,
-                              String monthFullName, String monthShortName, int monthNumber,
-                              int date, String weekDayFullName, String weekDayShortName, int hour24,
-                              int hour12, int min, int sec, String AM_PM)
+                              String monthFullName, String monthShortName, int monthNumber, int date,
+                              String weekDayFullName, String weekDayShortName, int hour24, int hour12, int min, int sec,
+                              String AM_PM)
             {
                 editText.setText("");
                 editText.setText(year + "-" + (monthNumber + 1) + "-" + calendarSelected
@@ -496,58 +484,66 @@ public class TaskDetailActivity
     private void datePicker(final EditText editText, final Calendar calendar)
     {
         final Calendar cur = Calendar.getInstance();
-        try {
-            cur.setTime(Constants.getDateTimeFormatter().parse(editText.getText().toString()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        cur.setTimeInMillis(Constants.getDateTimeFormatter().parseDateTime(editText.getText().toString()).getMillis());
 
-        DatePickerDialog datePickerDialog = new DatePickerDialog(this,
-                new DatePickerDialog.OnDateSetListener()
-                {
-
-                    @Override
-                    public void onDateSet(DatePicker view, int year, int monthOfYear,
-                                          int dayOfMonth)
-                    {
-                        //dateTime = new DateTime(year, monthOfYear, dayOfMonth, 0, 0);
-                        calendar.set(Calendar.YEAR, year);
-                        calendar.set(Calendar.MONTH, monthOfYear);
-                        calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-                        //date_time = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
-                        //*************Call Time Picker Here ********************
-                        timePicker(editText, calendar);
-                    }
-                }, cur.get(Calendar.YEAR), cur.get(Calendar.MONTH), cur.get(Calendar.DAY_OF_MONTH));
+        DatePickerDialog datePickerDialog = new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener()
+        {
+            @Override
+            public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth)
+            {
+                //dateTime = new DateTime(year, monthOfYear, dayOfMonth, 0, 0);
+                calendar.set(Calendar.YEAR, year);
+                calendar.set(Calendar.MONTH, monthOfYear);
+                calendar.set(Calendar.DAY_OF_MONTH, dayOfMonth);
+                //date_time = dayOfMonth + "-" + (monthOfYear + 1) + "-" + year;
+                //*************Call Time Picker Here ********************
+                timePicker(editText, calendar);
+            }
+        }, cur.get(Calendar.YEAR), cur.get(Calendar.MONTH), cur.get(Calendar.DAY_OF_MONTH));
         datePickerDialog.show();
     }
 
     private void timePicker(final EditText editText, final Calendar calendar)
     {
         final Calendar cur = Calendar.getInstance();
-        try {
-            cur.setTime(Constants.getDateTimeFormatter().parse(editText.getText().toString()));
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
+        cur.setTimeInMillis(Constants.getDateTimeFormatter().parseDateTime(editText.getText().toString()).getMillis());
 
         // Launch Time Picker Dialog
-        final TimePickerDialog timePickerDialog = new TimePickerDialog(this,
-                new TimePickerDialog.OnTimeSetListener()
-                {
+        final TimePickerDialog timePickerDialog = new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener()
+        {
+            @Override
+            public void onTimeSet(TimePicker view, int hourOfDay, int minute)
+            {
+                calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
+                calendar.set(Calendar.MINUTE, minute);
+                //mHour = hourOfDay;
+                //mMinute = minute;
 
-                    @Override
-                    public void onTimeSet(TimePicker view, int hourOfDay, int minute)
-                    {
-                        calendar.set(Calendar.HOUR_OF_DAY, hourOfDay);
-                        calendar.set(Calendar.MINUTE, minute);
-                        //mHour = hourOfDay;
-                        //mMinute = minute;
-
-                        editText.setText(
-                                Constants.getDateTimeFormatter().format(calendar.getTime()));
+                editText.setText(Constants.getDateTimeFormatter().print(calendar.getTimeInMillis()));
+                if (editText.getId() == txtTimeStart.getId()) {
+                    if (txtTimeFinish.getText() != null && !txtTimeFinish.getText().toString().isEmpty()) {
+                        final DateTime endDateTimeTmp = Constants.getDateTimeFormatter()
+                                                                 .parseDateTime(txtTimeFinish.getText().toString());
+                        final DateTime iniDateTimeTmp = Constants.getDateTimeFormatter()
+                                                                 .parseDateTime(txtTimeStart.getText().toString());
+                        if (iniDateTimeTmp.isAfter(endDateTimeTmp)) {
+                            txtTimeFinish.setText(Constants.getDateTimeFormatter().print(iniDateTimeTmp.plusHours(1)));
+                        }
                     }
-                }, cur.get(Calendar.HOUR_OF_DAY), cur.get(Calendar.MINUTE), false);
+                } else {
+                    if (txtTimeStart.getText() != null && !txtTimeStart.getText().toString().isEmpty()) {
+                        final DateTime endDateTimeTmp = Constants.getDateTimeFormatter()
+                                                                 .parseDateTime(txtTimeFinish.getText().toString());
+                        final DateTime iniDateTimeTmp = Constants.getDateTimeFormatter()
+                                                                 .parseDateTime(txtTimeStart.getText().toString());
+                        if (iniDateTimeTmp.isAfter(endDateTimeTmp)) {
+                            txtTimeStart.setText(Constants.getDateTimeFormatter().print(endDateTimeTmp.minusHours(1)));
+                        }
+                    }
+                }
+
+            }
+        }, cur.get(Calendar.HOUR_OF_DAY), cur.get(Calendar.MINUTE), false);
         timePickerDialog.show();
     }
 
@@ -577,10 +573,9 @@ public class TaskDetailActivity
             case Constants.NOTIFICATIONEDIT_REQUEST_CODE:
                 if (resultCode == RESULT_OK) {
                     String notificationTime = data.getStringExtra(Constants.NOTIFICATIONTIME_PARAM);
-                    Log.d(TAG, "onActivityResult: " + Constants.NOTIFICATIONEDIT_REQUEST_CODE
-                            + ",  notificationTime: " + notificationTime);
-                    Notification notification = data
-                            .getParcelableExtra(Constants.NOTIFICATION_PARAM);
+                    Log.d(TAG,
+                            "onActivityResult: " + Constants.NOTIFICATIONEDIT_REQUEST_CODE + ",  notificationTime: " + notificationTime);
+                    Notification notification = data.getParcelableExtra(Constants.NOTIFICATION_PARAM);
                     notification.setDescription(notificationTime);
                     //notification.setNotificationDate(task.getTaskDate().minusMinutes(Constants.NOTIFICATION.valueOf(notificationTime).getTime()));
                     if (!notificationTime.equals(Constants.NOTIFICATION.NONE.name())) {
@@ -613,8 +608,8 @@ public class TaskDetailActivity
         Intent intent = new Intent(this, NotificationActivity.class);
         notificationPosition = position;
         intent.putExtra(Constants.NOTIFICATION_PARAM, notification);
-        if (!Constants.EMPTY_NOTIFICATION.equals(notification.getDescription())
-                && !uiMode.equals(Constants.MODE_VIEW)) {
+        if (!Constants.EMPTY_NOTIFICATION.equals(notification.getDescription()) && !uiMode
+                .equals(Constants.MODE_VIEW)) {
             startActivityForResult(intent, Constants.NOTIFICATIONEDIT_REQUEST_CODE);
         }
     }

@@ -39,8 +39,8 @@ public class AlarmReceiver extends BroadcastReceiver{
 
         Notification notification = builder.setContentTitle(task.getName())
                 .setContentText(DateTimeComparator.getDateOnlyInstance().compare(task.getTaskDate(), DateTime.now()) == 0
-                        ? Constants.getTimeFormatter().format(task.getTaskTimeStart().toDate())
-                        : Constants.getDateTimeFormatter().format(task.getTaskTimeStart().toDate()))
+                        ? Constants.getTimeFormatter().print(task.getTaskTimeStart())
+                        : Constants.getDateTimeFormatter().print(task.getTaskTimeStart()))
                 //.setTicker()
                 .setSmallIcon(android.R.drawable.ic_dialog_alert)
                 .setDefaults(Notification.DEFAULT_ALL)
