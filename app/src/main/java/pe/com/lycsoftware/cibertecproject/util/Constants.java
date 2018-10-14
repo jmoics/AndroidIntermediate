@@ -20,24 +20,30 @@ public class Constants {
     public static final String MODE_CREATE = "mode_create";
     public static final String MODE_VIEW = "mode_view";
 
+    public static final String CHANNEL_ID = "pe.com.lycsoftware.cibertecproject";
+    public static final String CHANNEL_NAME = "Notificaciones de Alarma";
 
     public enum NOTIFICATION {
-        NONE(-1, "Ninguno"),
-        EXACTLY(0, "Hora exacta"),
-        MINUTES_01(1, "1 min. antes"),
-        MINUTES_10(10, "10 min. antes"),
-        MINUTES_30(30, "30 min. antes"),
-        HOUR_01(60, "1 hora antes"),
-        HOUR_06(360, "6 horas antes"),
-        DAY_01(1440, "1 día antes");
+        NONE(-1, "Ninguno", ""),
+        EXACTLY(0, "Hora exacta", "Ahora inicia la tarea programada"),
+        MINUTES_01(1, "1 min. antes", "En 1 minuto inicia la tarea programada"),
+        MINUTES_02(2, "2 min. antes", "En 2 minuto inicia la tarea programada"),
+        MINUTES_10(10, "10 min. antes", "En 10 minutos inicia la tarea programada"),
+        MINUTES_30(30, "30 min. antes", "En 30 minutos inicia la tarea programada"),
+        HOUR_01(60, "1 hora antes", "En 1 hora inicia la tarea programada"),
+        HOUR_06(360, "6 horas antes", "En 6 horas inicia la tarea programada"),
+        DAY_01(1440, "1 día antes", "En 1 día inicia la tarea programada");
 
         private int time;
         private String desc;
+        private String message;
 
         NOTIFICATION(final int time,
-                     final String desc) {
+                     final String desc,
+                     final String message) {
             this.time = time;
             this.desc = desc;
+            this.message = message;
         }
 
         public int getTime() {
@@ -47,6 +53,11 @@ public class Constants {
         public String getDesc() {
             return this.desc;
         }
+
+        public String getMessage()
+        {
+            return message;
+        }
     }
 
     public static SimpleDateFormat getDateTimeFormatter() {
@@ -55,5 +66,9 @@ public class Constants {
     }
     public static SimpleDateFormat getDateFormatter() {
         return new SimpleDateFormat("dd/MM/yyyy");
+    }
+
+    public static SimpleDateFormat getTimeFormatter() {
+        return new SimpleDateFormat("HH:mm");
     }
 }

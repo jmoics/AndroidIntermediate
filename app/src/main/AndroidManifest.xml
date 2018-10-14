@@ -36,6 +36,9 @@
         <activity
             android:name=".NotificationActivity"
             android:parentActivityName=".TaskDetailActivity"/>
+        <receiver
+            android:name=".AlarmReceiver"
+            android:enabled="true"/>
     </application>
 
 </manifest>

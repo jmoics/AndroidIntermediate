@@ -1,7 +1,9 @@
 package pe.com.lycsoftware.cibertecproject;
 
+import android.app.AlarmManager;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.PendingIntent;
 import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
@@ -237,7 +239,7 @@ public class TaskDetailActivity
         task.setName(this.txtName.getText().toString());
         try {
             task.setTaskDate(new DateTime(
-                    Constants.getDateTimeFormatter().parse(this.txtTimeStart.getText().toString())
+                    Constants.getDateFormatter().parse(this.txtTimeStart.getText().toString())
                              .getTime()));
             task.setTaskTimeStart(new DateTime(
                     Constants.getDateTimeFormatter().parse(this.txtTimeStart.getText().toString())
@@ -255,6 +257,8 @@ public class TaskDetailActivity
                 public void onResponse(Task response)
                 {
                     saveNotifications();
+                    unscheduleNotifications();
+                    scheduleNotifications();
                     finish();
                 }
 
@@ -271,6 +275,7 @@ public class TaskDetailActivity
                 {
                     task.setObjectId(response.getObjectId());
                     saveNotifications();
+                    scheduleNotifications();
                     finish();
                 }
 
@@ -351,6 +356,43 @@ public class TaskDetailActivity
                     }
                 }
             }
+        }
+    }
+
+    private void scheduleNotifications() {
+        //int count = 10;
+        for (Notification notification : notificationList) {
+            Log.d(TAG, "scheduleNotifications: Notification scheduled at "
+                    + Constants.getDateTimeFormatter().format(notification.getNotificationDate().toDate()));
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+            Intent notificationIntent = new Intent(this, AlarmReceiver.class);
+            notificationIntent.putExtra(Constants.TASK_PARAM, task);
+            notificationIntent.putExtra(Constants.NOTIFICATION_PARAM, notification);
+            PendingIntent broadcast = PendingIntent.getBroadcast(this,
+                    notification.getNotificationDate().getMillisOfDay(),
+                    notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            /*Calendar cal = Calendar.getInstance();
+            cal.add(Calendar.SECOND, count);*/
+            alarmManager.setExact(AlarmManager.RTC_WAKEUP, notification.getNotificationDate().getMillis(), broadcast);
+            //alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
+            //count = count + 20;
+        }
+    }
+
+    private void unscheduleNotifications() {
+        for (Notification notification : notificationDeleteList) {
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+
+            Intent notificationIntent = new Intent(this, AlarmReceiver.class);
+            notificationIntent.putExtra(Constants.TASK_PARAM, task);
+            notificationIntent.putExtra(Constants.NOTIFICATION_PARAM, notification);
+            PendingIntent broadcast = PendingIntent.getBroadcast(this,
+                    notification.getNotificationDate().getMillisOfDay(),
+                    notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+            alarmManager.cancel(broadcast);
         }
     }
 
@@ -544,6 +586,7 @@ public class TaskDetailActivity
                     if (!notificationTime.equals(Constants.NOTIFICATION.NONE.name())) {
                         if (!notificationSet.contains(notificationTime)) {
                             Notification notificationDelete = notificationList.remove(notificationPosition);
+                            notification.setDescription(notificationTime);
                             notificationSet.remove(notificationDelete.getDescription());
                             notificationList.add(notificationPosition, notification);
                             notificationSet.add(notificationTime);
