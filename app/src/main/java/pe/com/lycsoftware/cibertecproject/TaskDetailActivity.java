@@ -23,7 +23,6 @@ import android.widget.TimePicker;
 
 import org.joda.time.DateTime;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -581,7 +580,7 @@ public class TaskDetailActivity
     {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case Constants.NOTIFICATIONCREATE_REQUEST_CODE:
+            case Constants.REQUEST_CODE_NOTIFICATION_CREATE:
                 if (resultCode == RESULT_OK) {
                     String notificationTime = data.getStringExtra(Constants.NOTIFICATIONTIME_PARAM);
                     Notification notification = new Notification();
@@ -599,11 +598,11 @@ public class TaskDetailActivity
                     notificationAdapter.notifyDataSetChanged();
                 }
                 break;
-            case Constants.NOTIFICATIONEDIT_REQUEST_CODE:
+            case Constants.REQUEST_CODE_NOTIFICATION_EDIT:
                 if (resultCode == RESULT_OK) {
                     String notificationTime = data.getStringExtra(Constants.NOTIFICATIONTIME_PARAM);
                     Log.d(TAG,
-                            "onActivityResult: " + Constants.NOTIFICATIONEDIT_REQUEST_CODE + ",  notificationTime: " + notificationTime);
+                            "onActivityResult: " + Constants.REQUEST_CODE_NOTIFICATION_EDIT + ",  notificationTime: " + notificationTime);
                     Notification notification = data.getParcelableExtra(Constants.NOTIFICATION_PARAM);
                     notification.setDescription(notificationTime);
                     //notification.setNotificationDate(task.getTaskDate().minusMinutes(Constants.NOTIFICATION.valueOf(notificationTime).getTime()));
@@ -646,7 +645,7 @@ public class TaskDetailActivity
         intent.putExtra(Constants.NOTIFICATION_PARAM, notification);
         if (!Constants.EMPTY_NOTIFICATION.equals(notification.getDescription()) && !uiMode
                 .equals(Constants.MODE_VIEW)) {
-            startActivityForResult(intent, Constants.NOTIFICATIONEDIT_REQUEST_CODE);
+            startActivityForResult(intent, Constants.REQUEST_CODE_NOTIFICATION_EDIT);
         }
     }
 
@@ -654,6 +653,6 @@ public class TaskDetailActivity
     public void onNotificationAddClick()
     {
         Intent intent = new Intent(this, NotificationActivity.class);
-        startActivityForResult(intent, Constants.NOTIFICATIONCREATE_REQUEST_CODE);
+        startActivityForResult(intent, Constants.REQUEST_CODE_NOTIFICATION_CREATE);
     }
 }

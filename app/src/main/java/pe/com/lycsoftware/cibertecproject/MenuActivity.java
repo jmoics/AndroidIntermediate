@@ -131,7 +131,7 @@ public class MenuActivity extends AppCompatActivity
                 if (user != null) {
                     Intent intent = new Intent(this, UserActivity.class);
                     intent.putExtra(Constants.USER_PARAM, user);
-                    startActivityForResult(intent, Constants.USER_REQUEST_CODE);
+                    startActivityForResult(intent, Constants.REQUEST_CODE_USER);
                 } else {
                     Toast.makeText(this,
                             "Existe un error con la conexión al servidor 2", Toast.LENGTH_LONG)
@@ -156,7 +156,7 @@ public class MenuActivity extends AppCompatActivity
         super.onActivityResult(requestCode, resultCode, data);
         Log.d(TAG, "onActivityResult: ");
         switch (requestCode) {
-            case Constants.USER_REQUEST_CODE:
+            case Constants.REQUEST_CODE_USER:
                 user = data.getParcelableExtra(Constants.USER_PARAM);
                 break;
         }
@@ -166,6 +166,6 @@ public class MenuActivity extends AppCompatActivity
     public void onTaskListFragmentInteraction(final Task selectedTask) {
         Intent intent = new Intent(this, TaskDetailActivity.class);
         intent.putExtra(Constants.TASK_PARAM, selectedTask);
-        startActivityForResult(intent, Constants.TASKEDIT_REQUEST_CODE);
+        startActivityForResult(intent, Constants.REQUEST_CODE_TASK_EDIT);
     }
 }

@@ -60,7 +60,7 @@ public class TaskListFragment extends Fragment {
             public void onClick(final View v)
             {
                 Intent intent = new Intent(getActivity(), TaskDetailActivity.class);
-                startActivityForResult(intent, Constants.TASKCREATE_REQUEST_CODE);
+                startActivityForResult(intent, Constants.REQUEST_CODE_TASK_CREATE);
             }
         });
 

@@ -95,7 +95,7 @@ public class UserActivity extends AppCompatActivity {
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         Log.d(TAG, "onActivityResult: ");
         switch (requestCode) {
-            case Constants.USEREDIT_REQUEST_CODE:
+            case Constants.REQUEST_CODE_USER_EDIT:
                 if (resultCode == Activity.RESULT_OK) {
                     user = data.getParcelableExtra(Constants.USER_PARAM);
                 }
@@ -158,7 +158,7 @@ public class UserActivity extends AppCompatActivity {
             case R.id.action_edit:
                 Intent intent = new Intent(this, UserEditActivity.class);
                 intent.putExtra(Constants.USER_PARAM, user);
-                startActivityForResult(intent, Constants.USEREDIT_REQUEST_CODE);
+                startActivityForResult(intent, Constants.REQUEST_CODE_USER_EDIT);
                 break;
         }
 
