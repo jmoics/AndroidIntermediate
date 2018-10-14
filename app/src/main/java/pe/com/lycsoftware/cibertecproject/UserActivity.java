@@ -35,6 +35,7 @@ public class UserActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         setContentView(R.layout.activity_user);
         setToolbarProperties();
 
@@ -167,6 +168,7 @@ public class UserActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         super.onBackPressed();
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
         Log.i(TAG, "onBackPressed: ");
         callReturnActivity();
     }
@@ -177,5 +179,12 @@ public class UserActivity extends AppCompatActivity {
         intent.putExtra(Constants.USER_PARAM, user);
         setResult(Activity.RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 }

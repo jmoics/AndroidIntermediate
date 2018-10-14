@@ -9,6 +9,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
+import android.os.Bundle;
 import android.support.annotation.RequiresApi;
 import android.support.v4.app.NotificationManagerCompat;
 
@@ -22,9 +23,11 @@ public class AlarmReceiver extends BroadcastReceiver{
 
     @Override
     public void onReceive(Context context, Intent intent) {
-        final Task task = intent.getParcelableExtra(Constants.TASK_PARAM);
-        pe.com.lycsoftware.cibertecproject.model.Notification notif = intent.getParcelableExtra(Constants.NOTIFICATION_PARAM);
-
+        Bundle bundle = intent.getBundleExtra("bundle");
+        Task task = bundle.getParcelable(Constants.TASK_PARAM);
+        pe.com.lycsoftware.cibertecproject.model.Notification notif = bundle.getParcelable(Constants.NOTIFICATION_PARAM);
+        //final Task task = intent.getParcelableExtra(Constants.TASK_PARAM);
+        //pe.com.lycsoftware.cibertecproject.model.Notification notif = intent.getParcelableExtra(Constants.NOTIFICATION_PARAM);
         Intent notificationIntent = new Intent(context, TaskDetailActivity.class);
         notificationIntent.putExtra(Constants.TASK_PARAM, task);
 

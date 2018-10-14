@@ -61,6 +61,7 @@ public class TaskDetailActivity
     {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: ");
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         setContentView(R.layout.activity_task_detail);
 
         setToolbarProperties();
@@ -106,72 +107,19 @@ public class TaskDetailActivity
         loadNotifications();
     }
 
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
+
     private void setToolbarProperties()
     {
         Toolbar main_toolbar = findViewById(R.id.toolbarTask);
         setSupportActionBar(main_toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowTitleEnabled(true);
-    }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu)
-    {
-        getMenuInflater().inflate(R.menu.menu_profile, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu)
-    {
-        switch (uiMode) {
-            case Constants.MODE_CREATE:
-                menu.findItem(R.id.action_edit).setVisible(false);
-                menu.findItem(R.id.action_delete).setVisible(false);
-                menu.findItem(R.id.action_cancel).setVisible(false);
-                menu.findItem(R.id.action_save).setVisible(true);
-                break;
-            case Constants.MODE_EDIT:
-                menu.findItem(R.id.action_edit).setVisible(false);
-                menu.findItem(R.id.action_delete).setVisible(false);
-                menu.findItem(R.id.action_cancel).setVisible(true);
-                menu.findItem(R.id.action_save).setVisible(true);
-                break;
-            case Constants.MODE_VIEW:
-                menu.findItem(R.id.action_edit).setVisible(true);
-                menu.findItem(R.id.action_delete).setVisible(true);
-                menu.findItem(R.id.action_cancel).setVisible(false);
-                menu.findItem(R.id.action_save).setVisible(false);
-                break;
-        }
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        invalidateOptionsMenu();
-        switch (item.getItemId()) {
-            case R.id.action_edit:
-                //item.setVisible(false);
-                notificationAdapter.getTxtNotificationAdd().setVisibility(View.VISIBLE);
-                activateEditMode();
-                return true;
-            case R.id.action_delete:
-                deleteAll();
-                return true;
-            case R.id.action_save:
-                saveTask();
-                return true;
-            case R.id.action_cancel:
-                notificationAdapter.getTxtNotificationAdd().setVisibility(View.GONE);
-                activateViewMode();
-                showTaskData();
-                loadNotifications();
-                return true;
-            default:
-                return super.onOptionsItemSelected(item);
-        }
     }
 
     private void showTaskData()
@@ -353,8 +301,12 @@ public class TaskDetailActivity
                 AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
                 Intent notificationIntent = new Intent(this, AlarmReceiver.class);
-                notificationIntent.putExtra(Constants.TASK_PARAM, task);
-                notificationIntent.putExtra(Constants.NOTIFICATION_PARAM, notification);
+                Bundle bundle = new Bundle();
+                bundle.putParcelable(Constants.TASK_PARAM, task);
+                bundle.putParcelable(Constants.NOTIFICATION_PARAM, notification);
+                notificationIntent.putExtra("bundle", bundle);
+                //notificationIntent.putExtra(Constants.TASK_PARAM, task);
+                //notificationIntent.putExtra(Constants.NOTIFICATION_PARAM, notification);
                 PendingIntent broadcast = PendingIntent
                         .getBroadcast(this, notification.getNotificationDate().getMillisOfDay(), notificationIntent,
                                 PendingIntent.FLAG_UPDATE_CURRENT);
@@ -551,6 +503,66 @@ public class TaskDetailActivity
     }
 
     @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_profile, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu)
+    {
+        switch (uiMode) {
+            case Constants.MODE_CREATE:
+                menu.findItem(R.id.action_edit).setVisible(false);
+                menu.findItem(R.id.action_delete).setVisible(false);
+                menu.findItem(R.id.action_cancel).setVisible(false);
+                menu.findItem(R.id.action_save).setVisible(true);
+                break;
+            case Constants.MODE_EDIT:
+                menu.findItem(R.id.action_edit).setVisible(false);
+                menu.findItem(R.id.action_delete).setVisible(false);
+                menu.findItem(R.id.action_cancel).setVisible(true);
+                menu.findItem(R.id.action_save).setVisible(true);
+                break;
+            case Constants.MODE_VIEW:
+                menu.findItem(R.id.action_edit).setVisible(true);
+                menu.findItem(R.id.action_delete).setVisible(true);
+                menu.findItem(R.id.action_cancel).setVisible(false);
+                menu.findItem(R.id.action_save).setVisible(false);
+                break;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item)
+    {
+        invalidateOptionsMenu();
+        switch (item.getItemId()) {
+            case R.id.action_edit:
+                //item.setVisible(false);
+                notificationAdapter.getTxtNotificationAdd().setVisibility(View.VISIBLE);
+                activateEditMode();
+                return true;
+            case R.id.action_delete:
+                deleteAll();
+                return true;
+            case R.id.action_save:
+                saveTask();
+                return true;
+            case R.id.action_cancel:
+                notificationAdapter.getTxtNotificationAdd().setVisibility(View.GONE);
+                activateViewMode();
+                showTaskData();
+                loadNotifications();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data)
     {
         super.onActivityResult(requestCode, resultCode, data);
@@ -603,6 +615,13 @@ public class TaskDetailActivity
                 }
                 break;
         }
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 
     @Override

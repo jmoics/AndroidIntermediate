@@ -22,6 +22,7 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
         setContentView(R.layout.activity_notification);
 
         notification = getIntent().getParcelableExtra(Constants.NOTIFICATION_PARAM);
@@ -63,5 +64,19 @@ public class NotificationActivity extends AppCompatActivity implements Notificat
         }
         setResult(RESULT_OK, intent);
         finish();
+    }
+
+    @Override
+    protected void onPause()
+    {
+        super.onPause();
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
+    }
+
+    @Override
+    public void onBackPressed()
+    {
+        super.onBackPressed();
+        overridePendingTransition(android.R.anim.slide_in_left, android.R.anim.slide_out_right);
     }
 }

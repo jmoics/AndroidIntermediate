@@ -73,8 +73,8 @@ public class MenuActivity extends AppCompatActivity
                 "Listando Tareas...", false);
         progressDialog.setCancelable(true);
         loadUser();
-
     }
+
 
     private void loadUser() {
         Networking.getUser4Email("jmoics@gmail.com", new Networking.NetworkingCallback<List<User>>() {

@@ -38,7 +38,9 @@
             android:parentActivityName=".TaskDetailActivity"/>
         <receiver
             android:name=".AlarmReceiver"
-            android:enabled="true"/>
+            android:directBootAware="true"
+            android:enabled="true"
+            android:exported="true"/>
     </application>
 
 </manifest>
