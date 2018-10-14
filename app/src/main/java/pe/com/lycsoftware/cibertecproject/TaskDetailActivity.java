@@ -347,22 +347,25 @@ public class TaskDetailActivity
     {
         //int count = 10;
         for (Notification notification : notificationList) {
-            Log.d(TAG, "scheduleNotifications: Notification scheduled at "
-                    + Constants.getDateTimeFormatter().print(notification.getNotificationDate()));
-            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            if (notification.getNotificationDate().isAfter(DateTime.now())) {
+                Log.d(TAG, "scheduleNotifications: Notification scheduled at "
+                        + Constants.getDateTimeFormatter().print(notification.getNotificationDate()));
+                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-            Intent notificationIntent = new Intent(this, AlarmReceiver.class);
-            notificationIntent.putExtra(Constants.TASK_PARAM, task);
-            notificationIntent.putExtra(Constants.NOTIFICATION_PARAM, notification);
-            PendingIntent broadcast = PendingIntent
-                    .getBroadcast(this, notification.getNotificationDate().getMillisOfDay(), notificationIntent,
-                            PendingIntent.FLAG_UPDATE_CURRENT);
+                Intent notificationIntent = new Intent(this, AlarmReceiver.class);
+                notificationIntent.putExtra(Constants.TASK_PARAM, task);
+                notificationIntent.putExtra(Constants.NOTIFICATION_PARAM, notification);
+                PendingIntent broadcast = PendingIntent
+                        .getBroadcast(this, notification.getNotificationDate().getMillisOfDay(), notificationIntent,
+                                PendingIntent.FLAG_UPDATE_CURRENT);
 
-            /*Calendar cal = Calendar.getInstance();
-            cal.add(Calendar.SECOND, count);*/
-            alarmManager.setExact(AlarmManager.RTC_WAKEUP, notification.getNotificationDate().getMillis(), broadcast);
-            //alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
-            //count = count + 20;
+                /*Calendar cal = Calendar.getInstance();
+                cal.add(Calendar.SECOND, count);*/
+                alarmManager
+                        .setExact(AlarmManager.RTC_WAKEUP, notification.getNotificationDate().getMillis(), broadcast);
+                //alarmManager.setExact(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), broadcast);
+                //count = count + 20;
+            }
         }
     }
 
