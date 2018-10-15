@@ -25,6 +25,7 @@ import java.util.List;
 import pe.com.lycsoftware.cibertecproject.model.Task;
 import pe.com.lycsoftware.cibertecproject.model.User;
 import pe.com.lycsoftware.cibertecproject.util.Constants;
+import pe.com.lycsoftware.cibertecproject.util.DependencyInjection;
 import pe.com.lycsoftware.cibertecproject.util.Networking;
 
 public class MenuActivity extends AppCompatActivity
@@ -37,12 +38,13 @@ public class MenuActivity extends AppCompatActivity
     private User user;
     private int menuSelected;
     private ProgressDialog progressDialog;
+    private Networking networking;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_menu);
-
+        networking = DependencyInjection.getNetworking();
         menuSelected = menuSelected != 0 ? menuSelected : R.id.navTask;
 
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -77,7 +79,7 @@ public class MenuActivity extends AppCompatActivity
 
 
     private void loadUser() {
-        Networking.getUser4Email("jmoics@gmail.com", new Networking.NetworkingCallback<List<User>>() {
+        networking.getUser4Email("jmoics@gmail.com", new Networking.NetworkingCallback<List<User>>() {
             @Override
             public void onResponse(List<User> response) {
                 user = !response.isEmpty() ? response.get(0) : null;

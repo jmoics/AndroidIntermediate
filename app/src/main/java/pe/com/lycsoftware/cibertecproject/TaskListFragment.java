@@ -21,6 +21,7 @@ import java.util.List;
 
 import pe.com.lycsoftware.cibertecproject.model.Task;
 import pe.com.lycsoftware.cibertecproject.util.Constants;
+import pe.com.lycsoftware.cibertecproject.util.DependencyInjection;
 import pe.com.lycsoftware.cibertecproject.util.Networking;
 
 public class TaskListFragment extends Fragment {
@@ -30,6 +31,7 @@ public class TaskListFragment extends Fragment {
     private SwipeRefreshLayout swipeRefreshLayout;
     private FloatingActionButton fabAddTask;
     private OnTaskListFragmentInteractionListener mListener;
+    private Networking networking;
 
     public TaskListFragment() {
         // Required empty public constructor
@@ -45,6 +47,7 @@ public class TaskListFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        networking = DependencyInjection.getNetworking();
         if (getArguments() != null) {
         }
     }
@@ -87,7 +90,7 @@ public class TaskListFragment extends Fragment {
     private void listTasks() {
         Log.d(TAG, "listTasks: ------ Init task request ------");
 
-        Networking.getTasks(new Networking.NetworkingCallback<List<Task>>() {
+        networking.getTasks(new Networking.NetworkingCallback<List<Task>>() {
             @Override
             public void onResponse(List<Task> response) {
                 TaskAdapter lst = new TaskAdapter(response);

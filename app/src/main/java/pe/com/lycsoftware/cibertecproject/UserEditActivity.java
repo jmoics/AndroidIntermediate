@@ -44,6 +44,7 @@ import java.util.Date;
 
 import pe.com.lycsoftware.cibertecproject.model.User;
 import pe.com.lycsoftware.cibertecproject.util.Constants;
+import pe.com.lycsoftware.cibertecproject.util.DependencyInjection;
 import pe.com.lycsoftware.cibertecproject.util.Networking;
 
 public class UserEditActivity extends AppCompatActivity {
@@ -54,11 +55,13 @@ public class UserEditActivity extends AppCompatActivity {
     private ProgressBar progressBarSave;
     private String imagePath;
     private User user;
+    private Networking networking;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        networking = DependencyInjection.getNetworking();
         setContentView(R.layout.activity_user_edit);
 
         edtEmail = findViewById(R.id.edtEmail);
@@ -142,7 +145,7 @@ public class UserEditActivity extends AppCompatActivity {
         user.setUrlImage(edtUrlImage.getText().toString());
 
         progressBarSave.setVisibility(View.VISIBLE);
-        Networking.updateUser(user, new Networking.NetworkingCallback<User>() {
+        networking.updateUser(user, new Networking.NetworkingCallback<User>() {
             @Override
             public void onResponse(User response) {
                 Intent intent = new Intent();

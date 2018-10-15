@@ -15,6 +15,8 @@ public class User implements Parcelable {
     @SerializedName("url_image")
     private String urlImage;
 
+    public User() {}
+
     protected User(Parcel in) {
         objectId = in.readString();
         email = in.readString();

@@ -33,6 +33,7 @@ import java.util.Set;
 import pe.com.lycsoftware.cibertecproject.model.Notification;
 import pe.com.lycsoftware.cibertecproject.model.Task;
 import pe.com.lycsoftware.cibertecproject.util.Constants;
+import pe.com.lycsoftware.cibertecproject.util.DependencyInjection;
 import pe.com.lycsoftware.cibertecproject.util.Networking;
 import pe.com.lycsoftware.cibertecproject.util.NotificationAdapter;
 
@@ -42,6 +43,7 @@ public class TaskDetailActivity
 {
 
     private static final String TAG = "TaskDetailActivity";
+    private Networking networking;
     private EditText txtName, txtTimeStart, txtTimeFinish;
     private RecyclerView recyclerView;
     private RecyclerView.LayoutManager layoutManager;
@@ -61,6 +63,7 @@ public class TaskDetailActivity
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: ");
         overridePendingTransition(R.anim.slide_in_right, R.anim.slide_out_left);
+        networking = DependencyInjection.getNetworking();
         setContentView(R.layout.activity_task_detail);
 
         setToolbarProperties();
@@ -151,7 +154,7 @@ public class TaskDetailActivity
     private void loadNotifications()
     {
         if (task.getObjectId() != null) {
-            Networking.getNotifications4Task(task.getObjectId(), new Networking.NetworkingCallback<List<Notification>>()
+            networking.getNotifications4Task(task.getObjectId(), new Networking.NetworkingCallback<List<Notification>>()
             {
                 @Override
                 public void onResponse(List<Notification> response)
@@ -204,7 +207,7 @@ public class TaskDetailActivity
         task.setTaskTimeFinish(Constants.getDateTimeFormatter().parseDateTime(this.txtTimeFinish.getText().toString()));
 
         if (task.getObjectId() != null) {
-            Networking.updateTask(task, new Networking.NetworkingCallback<Task>()
+            networking.updateTask(task, new Networking.NetworkingCallback<Task>()
             {
                 @Override
                 public void onResponse(Task response)
@@ -222,7 +225,7 @@ public class TaskDetailActivity
                 }
             });
         } else {
-            Networking.createTask(task, new Networking.NetworkingCallback<Task>()
+            networking.createTask(task, new Networking.NetworkingCallback<Task>()
             {
                 @Override
                 public void onResponse(final Task response)
@@ -246,7 +249,7 @@ public class TaskDetailActivity
     {
         if (!notificationDeleteList.isEmpty()) {
             for (final Notification notification : notificationDeleteList) {
-                Networking.deleteNotification(notification, new Networking.NetworkingCallback<Notification>()
+                networking.deleteNotification(notification, new Networking.NetworkingCallback<Notification>()
                 {
                     @Override
                     public void onResponse(Notification response)
@@ -268,7 +271,7 @@ public class TaskDetailActivity
                     notification.setNotificationDate(task.getTaskTimeStart().minusMinutes(
                             Constants.NOTIFICATION.valueOf(notification.getDescription()).getTime()));
                     if (notification.getObjectId() != null) {
-                        Networking.updateNotification(notification, new Networking.NetworkingCallback<Notification>()
+                        networking.updateNotification(notification, new Networking.NetworkingCallback<Notification>()
                         {
                             @Override
                             public void onResponse(Notification response)
@@ -284,7 +287,7 @@ public class TaskDetailActivity
                         });
                     } else {
                         notification.setTaskObjectId(task.getObjectId());
-                        Networking.createNotification(notification, new Networking.NetworkingCallback<Notification>()
+                        networking.createNotification(notification, new Networking.NetworkingCallback<Notification>()
                         {
                             @Override
                             public void onResponse(Notification response)
@@ -353,7 +356,7 @@ public class TaskDetailActivity
     private void deleteAll()
     {
         for (final Notification notification : notificationList) {
-            Networking.deleteNotification(notification, new Networking.NetworkingCallback<Notification>()
+            networking.deleteNotification(notification, new Networking.NetworkingCallback<Notification>()
             {
                 @Override
                 public void onResponse(final Notification response)
@@ -369,7 +372,7 @@ public class TaskDetailActivity
             });
         }
 
-        Networking.deleteTask(task, new Networking.NetworkingCallback<Task>()
+        networking.deleteTask(task, new Networking.NetworkingCallback<Task>()
         {
             @Override
             public void onResponse(final Task response)
